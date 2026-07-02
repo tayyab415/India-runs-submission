@@ -18,6 +18,23 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           rm -rf assets/
+
+          # Prepend HF Space frontmatter (not in the GitHub README to keep it clean)
+          HF_FRONT='---
+          title: URSI-FL Candidate Ranker
+          emoji: "\U0001F3AF"
+          colorFrom: blue
+          colorTo: indigo
+          sdk: gradio
+          sdk_version: "5.34.2"
+          app_file: app.py
+          pinned: false
+          license: mit
+          ---
+          '
+          printf '%s\n' "$HF_FRONT" | sed 's/^          //' | cat - README.md > README.tmp
+          mv README.tmp README.md
+
           git checkout --orphan hf-deploy
           git rm -rf --cached . > /dev/null 2>&1 || true
           git add -A
