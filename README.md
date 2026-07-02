@@ -1,3 +1,15 @@
+---
+title: URSI-FL Candidate Ranker
+emoji: "🎯"
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: "5.34.2"
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # Redrob Candidate Ranking — Senior AI Engineer (Founding Team)
 
 **URSI-FL (Unified Role Semantic Index, Fixed-Leak anchors — promoted variant

@@ -23,3 +23,5 @@ __pycache__/
 /tmp_*.csv
 /tmp_*.jsonl
 /docker_out/
+1Horizon.*
+assets/
