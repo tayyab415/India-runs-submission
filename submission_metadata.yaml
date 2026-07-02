@@ -65,18 +65,28 @@ compute:
 ai_tools_used:
   - "Cursor"
   - "Claude"
-  - "Other"   # OpenAI Codex for final packaging checks; ml-intern for adversarial audit; Azure OpenAI embeddings for semantic precompute
+  - "OpenAI Codex"
+  - "Azure OpenAI text-embedding-3-large"
+  - "Other"   # ml-intern, a Hugging Face based agent, used during development/audit only
 
 ai_usage_summary: |
   AI tools assisted research, design discussion, and code review, with all
   engineering decisions verified against the data and the validator:
   - Cursor + Claude: pairing on dataset analysis, scoring design, and code review.
-  - OpenAI Codex: final metadata/repository packaging checks.
-  - ml-intern (HF-based agent): read-only adversarial audit of the methodology and
-    top-100 reasoning.
-  - Azure OpenAI text-embedding-3-large: used in the PRECOMPUTE step to score the
-    deduplicated role-history documents and titles against JD-derived contrastive
-    anchors. This produces frozen CSV artifacts.
+  - OpenAI Codex: analysis of the released synthetic data structure, deterministic
+    scoring/reasoning implementation, grounded reasoning checks, and final
+    metadata/repository packaging.
+  - Codex/Claude were also used to inspect the organizer-provided DOCX files and
+    reverse-engineer the expected deterministic reasoning-column behavior: concise
+    1-2 sentence explanations grounded only in profile, career-history, and Redrob
+    signal fields, with no LLM generation at ranking time and no manual edits to
+    submitted rows.
+  - ml-intern (HF-based agent): research support for papers/docs, model and
+    embedding choice, architecture tradeoff analysis, and technical critique of
+    proposed ranking changes.
+  - OpenAI text-embedding-3-large via Azure OpenAI: used in the PRECOMPUTE step to
+    score the deduplicated role-history documents and titles against JD-derived
+    contrastive anchors. This produces frozen CSV artifacts.
   Embeddings are used ONLY in precompute. The official ranker (rank_ursi_fl.py) loads
   no model, makes no API calls, is deterministic, CPU-only, and offline; it reads
   only candidates.jsonl plus the committed CSV artifacts. The official score uses a
