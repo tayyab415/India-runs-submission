@@ -2,8 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+COPY requirements.txt requirements-sandbox.txt ./
+RUN pip install --no-cache-dir -r requirements-sandbox.txt
+
 COPY . .
 
-RUN python -m pip install --no-index -r requirements.txt
+EXPOSE 7860
 
-CMD ["python", "rank_ursi_fl.py", "--candidates", "./candidates.jsonl", "--role-projection", "./artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv", "--out", "./submission.csv"]
+CMD ["python", "app.py"]
