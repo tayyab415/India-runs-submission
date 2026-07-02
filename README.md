@@ -53,7 +53,7 @@ This is why the final ranker is fast and offline. The expensive semantic work is
 done once in precompute and frozen into CSV artifacts. The official submission
 command only reads `candidates.jsonl` plus those local artifacts.
 
-## Honeypot Moment: Strong AI Text With Impossible Dates
+## Honeypot Moment: Fine-Tuning LLaMA Before LLaMA Existed
 
 The second dataset moment was when we found profiles that were not merely weak
 matches, but impossible profiles.
@@ -216,6 +216,33 @@ honeypot or structural impossibility => score 0
 
 The output is a 100-row CSV with grounded, deterministic 1-2 sentence reasoning
 for every selected candidate.
+
+### Stage A Diagram: Precompute in Detail
+
+Stage A is where all embedding-dependent work happens. The design goal was to
+make this step rich enough to capture the JD, but small enough to audit. It
+embeds the 44 role templates, 48 title templates, and JD anchors once, then
+freezes the resulting evidence into local artifacts.
+
+![Stage A precompute deep dive](assets/architecture-diagrams/readme-stage-a-precompute-deep-dive.png)
+
+The important boundary is that Stage A can use Azure OpenAI because it is not
+the graded ranking command. Once the artifacts are written, the official path no
+longer needs any hosted model, API key, or network access.
+
+### Stage B Diagram: Offline Ranker in Detail
+
+Stage B is the official reproduction path. It reads the organizer-provided
+`candidates.jsonl`, the frozen Stage A CSVs, and then applies deterministic
+scoring and gates. The ranker is deliberately plain Python: no model loading,
+no network, no third-party package dependency.
+
+![Stage B offline ranker deep dive](assets/architecture-diagrams/readme-stage-b-offline-ranker-deep-dive.png)
+
+This is also where the method stays conservative. Career-history evidence sets
+the technical base fit, while logistics, title contradiction, consulting,
+tenure, verified-assessment confirmation, and honeypot checks act as bounded
+or negative controls.
 
 ## Quickstart: Reproduce the Submission
 
