@@ -83,31 +83,27 @@ ai_usage_summary: |
 # Approach summary
 # ============================================================================
 methodology_summary: |
-  URSI-FL (Unified Role Semantic Index, fixed-leak anchors; promoted variant FL-E).
-  We treat ranking as hybrid retrieval. The JD
-  is converted into a frozen multi-anchor contrastive query (7 positive/negative
-  evidence facets). We deduplicate the candidate pool's career-history documents
-  (the corpus collapses to 44 unique role descriptions and 48 titles, discovered —
-  not assumed) and score each unique role document ONCE with Azure
-  text-embedding-3-large, contrasting JD positive vs negative anchors and
-  rank-percentile normalizing within the discovered corpus. Role-level evidence is
-  projected to candidates by recency, duration, currentness, breadth, and a
-  separate semantic title-coherence guard. The offline CPU-only ranker combines
-  this single career-evidence signal with the raw semantic evidence of the
-  candidate's strongest role document, plus structured business gates (India/visa;
-  behavioral availability from last-active, open-to-work, recruiter responsiveness,
-  notice period and recent market activity; seniority; title coherence;
-  consulting/services and tenure guards; and a bounded [0.99-1.02] confirmation from
-  Redrob-verified JD-skill assessments). This keeps duration inside the projected
-  career-evidence signal without double-counting it in the best-role slot. Profile
-  summaries (76 templates) and skill names (133) are embedded with the same model
-  for false-positive diagnostics only and are never scored, so keyword-stuffed skill
-  sections cannot rescue a weak profile. Structural impossibilities (honeypots) and tech
-  anachronisms force a score of 0 (95 caught). There are NO manual template grades
-  and NO career-evidence keyword lexicons in the official path; the 44 templates
-  are used only as an after-the-fact audit. The top-100 is 100% India-based, all
-  technical (search/ranking/retrieval/recsys/NLP/applied-ML), zero honeypots, and
-  the ranking is stable to dropping any single JD anchor (Jaccard@100 0.87-1.0).
+  URSI-FL (Unified Role Semantic Index, fixed-leak anchors; promoted variant
+  FL-E) treats ranking as hybrid retrieval. The JD becomes a frozen multi-anchor
+  contrastive query (7 positive/negative evidence facets). The candidate pool's
+  career-history documents deduplicate to 44 unique role descriptions and 48
+  titles (discovered, not assumed); each unique role document is scored ONCE
+  with Azure text-embedding-3-large, contrasting JD positive vs negative
+  anchors and rank-percentile normalizing within the discovered corpus. Role
+  evidence is projected to candidates by recency, duration, currentness,
+  breadth, and a semantic title-coherence guard. The offline CPU-only ranker
+  combines this single career-evidence signal with the candidate's strongest
+  raw role-document evidence, plus structured business gates: India/visa,
+  behavioral availability (last-active, open-to-work, recruiter
+  responsiveness, notice period, market activity), seniority, title
+  coherence, consulting/tenure guards, and a bounded [0.99-1.02] confirmation
+  from Redrob-verified skill assessments. Profile summaries and skill names
+  are embedded only for false-positive diagnostics and are never scored, so
+  keyword-stuffed skills cannot rescue a weak profile. Structural
+  impossibilities and tech anachronisms force a score of 0 (95 caught, 0 in
+  top 100). No manual template grades or keyword lexicons are used in the
+  official path. The top-100 is 100% India-based, all technical, and stable
+  to dropping any single JD anchor (Jaccard@100 0.87-1.0).
 
 # ============================================================================
 # Declarations

@@ -28,7 +28,7 @@ gunzip -k candidates.jsonl.gz
 # 2) Create a clean virtual environment
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+python -m pip install --no-index -r requirements.txt
 
 # 3) Run the official ranker -- OFFLINE, CPU-only, no model load, deterministic.
 #    Uses only candidates.jsonl + the committed CSV artifacts below.
@@ -44,6 +44,16 @@ python3 validate_submission.py submission.csv
 Step 3 is the **single command** that reproduces the submission CSV from
 `candidates.jsonl`, as required by `submission_spec.md` §10.3.
 
+For a one-command local reproduction that also creates/uses `.venv` and runs the
+validator:
+
+```bash
+./reproduce.sh ./candidates.jsonl ./submission.csv
+```
+
+The script installs `requirements.txt` with `--no-index`; the official ranking
+path has no third-party dependencies, so setup does not need network access.
+
 **Measured on this repo's reference machine** (Apple M2, 8 CPU cores, 8 GB
 RAM, Python 3.11.4, macOS 14.8.7): **~35 s wall-clock, ~1.7 GB peak RSS** for
 the full 100,000-candidate pool — comfortably inside the 5 min / 16 GB / CPU-only
@@ -51,23 +61,42 @@ the full 100,000-candidate pool — comfortably inside the 5 min / 16 GB / CPU-o
 (fully deterministic; ties broken by ascending `candidate_id`).
 
 The ranking step (`rank_ursi_fl.py`) imports **no third-party package** — only
-Python standard library (`csv`, `json`, `re`, `argparse`, `pathlib`). `numpy`
-in `requirements.txt` is needed only for the optional precompute step below.
+Python standard library (`csv`, `json`, `re`, `argparse`, `pathlib`).
+`requirements.txt` is intentionally dependency-free. `numpy` is listed only in
+`requirements-precompute.txt` for the optional precompute step below.
 
 ### Running on a small sample
 
-`rank_ursi_fl.py` accepts `--limit N` to rank only the first N candidates from
-the input file — useful for a fast sandbox/demo run on a small sample:
+`rank_ursi_fl.py` accepts `--limit N` to read only the first N candidates and
+`--top-n N` to emit fewer than 100 rows for sandbox/demo smoke tests:
 
 ```bash
-python3 rank_ursi_fl.py --candidates ./candidates.jsonl --limit 100 \
+python3 rank_ursi_fl.py --candidates ./candidates.jsonl --limit 50 --top-n 50 \
   --role-projection ./artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv \
   --out ./sample_out.csv
 ```
 
-(Note: `--limit` truncates the *input pool*, so a 100-row sample won't
-necessarily contain 100 valid top-100 candidates once honeypots are excluded —
-it's meant for a quick smoke test, not a scored run.)
+This partial output is for sandbox/demonstration only. Official submissions must
+use the default `--top-n 100` and pass `validate_submission.py`.
+
+### Docker reproduction
+
+The repo also includes a minimal Dockerfile. Build the image, then mount the
+organizer-provided `candidates.jsonl` into the container:
+
+```bash
+docker build -t redrob-ursi-fl .
+docker run --rm \
+  -v "$PWD/candidates.jsonl:/app/candidates.jsonl:ro" \
+  -v "$PWD/docker_out:/out" \
+  redrob-ursi-fl \
+  python rank_ursi_fl.py \
+    --candidates /app/candidates.jsonl \
+    --role-projection /app/artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv \
+    --out /out/submission.csv
+docker run --rm -v "$PWD/docker_out:/out" redrob-ursi-fl \
+  python validate_submission.py /out/submission.csv
+```
 
 ## Optional: rebuilding the precomputed artifacts
 
@@ -78,6 +107,7 @@ to reproduce the submission. They were produced once, network-allowed, by:
 ```bash
 export AZURE_OPENAI_API_KEY="your-azure-openai-key"
 export AZURE_OPENAI_RESOURCE_URL="https://<your-resource>.openai.azure.com"
+python -m pip install -r requirements-precompute.txt
 python3 precompute_role_semantic_index_fl.py \
   --candidates ./candidates.jsonl --variant fl_e \
   --out-dir ./artifacts/role_semantic_index_fl/fl_e
@@ -143,7 +173,14 @@ stability, sentinel checks).
   `submission_spec.md` §10.2); fill in the identity fields before submitting.
 - `METHODOLOGY_URSI_FL.md` — the definitive methodology for the submitted system.
 - `URSI_FL.md`, `URSI_V3.md` — iteration history / changelogs.
-- `requirements.txt` — `numpy`, needed only by the optional precompute step.
+- `requirements.txt` — official ranking dependencies; intentionally empty of
+  packages because the ranker is standard-library only.
+- `requirements-precompute.txt` — optional `numpy` dependency for rebuilding
+  the frozen Azure embedding artifacts.
+- `reproduce.sh` — local helper that creates/uses `.venv`, runs the official
+  ranker, and validates the 100-row CSV.
+- `Dockerfile` / `.dockerignore` — container reproduction path for sandbox or
+  Stage 3-style checks.
 
 ## Honeypots and traps
 
@@ -164,4 +201,7 @@ only. The official ranker makes no API calls and loads no model.
 ## Sandbox / demo
 
 A hosted sandbox (small-sample reproduction, per `submission_spec.md` §10.5)
-is linked from `submission_metadata.yaml` → `sandbox_link`.
+is linked from `submission_metadata.yaml` → `sandbox_link`. If a hosted sandbox
+is unavailable, the Docker commands above are a self-contained reproduction
+recipe: they build the ranker image and run it with the released candidates file
+mounted read-only.
