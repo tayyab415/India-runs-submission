@@ -10,14 +10,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          lfs: true
-      - name: Remove binary assets before HF push
-        run: |
-          git rm -rf --cached assets/ 2>/dev/null || true
-          git commit --allow-empty -m "Strip binary assets for HF Space" --author="github-actions[bot] <github-actions[bot]@users.noreply.github.com>" || true
-      - name: Push to HuggingFace
+          fetch-depth: 1
+      - name: Build clean tree and push to HuggingFace
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push https://tyb343:$HF_TOKEN@huggingface.co/spaces/tyb343/India-runs-submission master:main --force
+          # Remove binary assets that HF rejects
+          rm -rf assets/
+          # Create a fresh single-commit branch with no binary history
+          git checkout --orphan hf-deploy
+          git rm -rf --cached . > /dev/null 2>&1 || true
+          git add -A
+          git commit -m "Sync from GitHub $(git rev-parse --short HEAD@{1})" \
+            --author="github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          git push https://tyb343:$HF_TOKEN@huggingface.co/spaces/tyb343/India-runs-submission hf-deploy:main --force
