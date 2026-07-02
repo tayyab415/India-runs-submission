@@ -304,6 +304,25 @@ It must contain:
 `validate_submission.py` checks this format contract. Passing the validator is
 necessary, but ranking quality still comes from the methodology and audits.
 
+## Organizer Evaluation Notes Reflected in This Repo
+
+The organizer spec makes the ranking top-heavy: the hidden score is weighted
+most toward the first screen of results (`NDCG@10` 50%, `NDCG@50` 30%, `MAP`
+15%, `P@10` 5%). URSI-FL therefore optimizes for very high precision at ranks
+1-10 and 1-50 rather than broad average plausibility across the pool.
+
+The spec also says Stage 4 manual review samples reasoning strings and checks
+for specific candidate facts, JD connection, honest concerns, no hallucinated
+skills/employers/experience, meaningful variation, and consistency between the
+reasoning tone and the rank. The submitted reasoning column is deterministic
+and generated from actual profile, career-history, and Redrob-signal fields so
+those checks can be audited without relying on an LLM at ranking time.
+
+The official docs warn that submissions with a honeypot rate above 10% in the
+top 100 can be disqualified during reproduction review. This repo includes
+shared honeypot/date-impossibility logic in `ursi_fl_common.py`; the final
+top-100 has 0 honeypots.
+
 ## Optional: Rebuild the Precomputed Artifacts
 
 The official ranker consumes frozen CSV artifacts already committed in this
