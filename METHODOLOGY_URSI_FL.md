@@ -166,11 +166,13 @@ candidate's actual data:
 - **honest concern**: the dominant penalty that actually fired for this
   candidate (location/relocation, notice period, open-to-work, response rate,
   offer acceptance, GitHub absence, …), or **behavioral strengths** (response
-  rate, notice period, active applications, GitHub) when no concern fired;
+  rate, notice period, active applications, GitHub) when no concern fired, or
+  a neutral middling-availability sentence built from actual signal values —
+  every row carries a second sentence;
 - **variation**: three clause structures rotated by `candidate_id % 3`
   (deterministic, no RNG), three evidence labels, five anchor phrasings, and
-  rank-consistent fit language ("strongly aligns" → "solid alignment" →
-  "adjacent") tiered on the same CES that drives the score.
+  rank-consistent fit language ("aligns strongly" → "solid" →
+  "lighter-weight" → "adjacent") tiered on the same CES that drives the score.
 
 All 100 strings are unique; tone tracks rank by construction because both are
 driven by the same underlying score components.

@@ -83,7 +83,7 @@ ANCHOR_JD_LANGUAGE = {
     "semantic_search_quality": "semantic search and embedding-based retrieval",
     "production_ml": "production ML systems deployed at scale",
     "matching_finetune_eval": "matching-system evaluation and ML fine-tuning",
-    "product_shipper": "shipping ML products end-to-end to real users",
+    "product_shipper": "end-to-end ML product delivery to real users",
 }
 
 
@@ -548,7 +548,7 @@ def score_candidate(
 def _snippet(text: str, n: int = 90) -> str:
     text = (text or "").strip().rstrip(".")
     if len(text) > n:
-        text = text[:n].rsplit(" ", 1)[0] + "\u2026"
+        text = text[:n].rsplit(" ", 1)[0].rstrip(".,;:") + "\u2026"
     return text
 
 
@@ -572,23 +572,32 @@ def build_reasoning(row: dict[str, Any], rank: int, previews: dict[str, str],
 
     variant = int(row["candidate_id"].replace("CAND_", "")) % 3
 
+    # Fit-tier language: warmth is monotone in the same CES that drives the
+    # score (Stage-4 rank consistency by construction). Anchor phrases are noun
+    # phrases placed clause-final so every frame stays grammatical.
     if ces >= 0.80:
         fit = (
-            f"career history strongly aligns with the JD\u2019s {anchor_desc} requirements",
-            f"deep career match on {anchor_desc} \u2014 the JD\u2019s core technical need",
-            f"strong fit: {rel_y:.1f}y of relevant experience in {anchor_desc}",
+            f"career history aligns strongly with the JD\u2019s core need: {anchor_desc}",
+            f"deep career match on the JD\u2019s central requirement, {anchor_desc}",
+            f"strong fit, with {rel_y:.1f}y of relevant experience in {anchor_desc}",
+        )[variant]
+    elif ces >= 0.72:
+        fit = (
+            f"career history shows solid production work in {anchor_desc}",
+            f"solid JD alignment, with {rel_y:.1f}y of relevant work in {anchor_desc}",
+            f"solid hands-on evidence in {anchor_desc}",
         )[variant]
     elif ces >= 0.62:
         fit = (
-            f"career history demonstrates {anchor_desc} experience matching the JD profile",
-            f"solid JD alignment on {anchor_desc} with {rel_y:.1f}y relevant",
-            f"clear evidence of {anchor_desc} work relevant to the JD",
+            f"career history shows relevant but lighter-weight work in {anchor_desc}",
+            f"moderate JD alignment on {anchor_desc}, below the top-tier profiles",
+            f"genuine but lighter-weight evidence in {anchor_desc}",
         )[variant]
     elif ces >= 0.45:
         fit = (
-            f"career history shows adjacent experience touching {anchor_desc}",
+            f"career history is adjacent to the JD, touching {anchor_desc}",
             f"partial JD alignment: some {anchor_desc} signals but not deep",
-            f"relevant adjacent work near {anchor_desc}, lighter than core-fit candidates",
+            f"adjacent work near {anchor_desc}, lighter than core-fit candidates",
         )[variant]
     else:
         fit = (
@@ -668,7 +677,10 @@ def build_reasoning(row: dict[str, Any], rank: int, previews: dict[str, str],
         positives.append(f"GitHub score {gh:.0f}/100")
     if positives:
         return f"{lead} Behavioral strengths: {'; '.join(positives[:2])}."
-    return lead
+    # Neutral grounded fallback: when no concern threshold and no strength
+    # threshold fires, still emit a second sentence from actual signal values.
+    return (f"{lead} Availability signals are middling: recruiter response rate "
+            f"{rr:.0%}, {np_}d notice period.")
 
 
 def write_submission(rows: list[dict[str, Any]], out: Path, previews: dict[str, str],
