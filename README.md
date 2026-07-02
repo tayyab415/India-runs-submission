@@ -400,15 +400,28 @@ The final FL-E path was adopted only after the following checks:
 
 ## AI Tools Declaration
 
-See `submission_metadata.yaml` for the full declaration. Summary: AI tools
-assisted with research, design discussion, code review, and packaging. Azure
-OpenAI `text-embedding-3-large` is used only in the precompute step to generate
-frozen local artifacts. The official ranker makes no API calls and loads no
-model.
+AI tools were used and declared explicitly:
+
+- Cursor and Claude supported dataset analysis, scoring-design discussion, and
+  code review.
+- OpenAI Codex supported repo-grounded implementation/review, packaging checks,
+  README/metadata edits, and offline/determinism verification.
+- Codex/Claude were also used to inspect the organizer-provided DOCX files and
+  reverse-engineer the intended deterministic `reasoning` column behavior:
+  concise 1-2 sentence explanations grounded only in candidate profile, career
+  history, and Redrob signal fields. No LLM generates reasoning at ranking time,
+  and the submitted CSV rows are produced deterministically by `rank_ursi_fl.py`.
+- ml-intern, a Hugging Face based agent, was used as a read-only adversarial
+  reviewer of methodology and top-100 reasoning.
+- Azure OpenAI `text-embedding-3-large` is used only in the one-time precompute
+  step that produces frozen local role/title artifacts. The official ranker
+  makes no API calls, loads no model, uses no GPU, and does not score skills or
+  summaries.
 
 ## Sandbox / Demo
 
-A hosted sandbox link is listed in `submission_metadata.yaml` under
-`sandbox_link`. If the hosted sandbox is unavailable, the Docker commands above
-are the self-contained reproduction path: build the ranker image and run it
-with the released candidates file mounted read-only.
+Hosted sandbox: https://tyb343-india-runs-submission.hf.space
+
+If the hosted sandbox is unavailable, the Docker commands above are the
+self-contained reproduction path: build the ranker image and run it with the
+released candidates file mounted read-only.
