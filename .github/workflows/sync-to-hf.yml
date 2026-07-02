@@ -12,6 +12,10 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Remove binary assets before HF push
+        run: |
+          git rm -rf --cached assets/ 2>/dev/null || true
+          git commit --allow-empty -m "Strip binary assets for HF Space" --author="github-actions[bot] <github-actions[bot]@users.noreply.github.com>" || true
       - name: Push to HuggingFace
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
