@@ -1,0 +1,134 @@
+skill_doc_id,skill,count_candidates,skill_semantic_evidence,top_anchor_family
+44c8cf4ce0611762,Tailwind,11917,0.124060,product_shipper
+46fb078d98c2df16,NLP,1358,0.552632,candidate_matching
+f201c10ef9ec89dd,Image Classification,4761,0.221805,product_shipper
+e19832ee4d8b4a28,Fine-tuning LLMs,4920,0.838346,semantic_search_quality
+82a2f4db4ad6660f,Weights & Biases,4685,0.725564,product_shipper
+d74bfbb10ddeedd8,Speech Recognition,4744,0.372180,product_shipper
+3f4a09b92ccf3382,Photoshop,11917,0.139098,product_shipper
+317e938a489b10da,TTS,4669,0.101504,product_shipper
+d339f720de1fd92a,LoRA,1371,0.349624,matching_finetune_eval
+f243330c5f8084bf,Apache Beam,12054,0.740601,product_shipper
+7d1507284a5757ca,AWS,12104,0.642857,product_shipper
+b87aa5270772708a,Flask,12104,0.244361,production_ml
+bf05aab57d989f6f,BentoML,4726,0.703008,product_shipper
+57fc6fe52563f941,Milvus,1384,0.026316,product_shipper
+44d4be1f5f2aab66,GANs,4815,0.417293,product_shipper
+5ec6026cc87d9008,Statistical Modeling,4634,0.778196,product_shipper
+3347d0bdd97e6df8,GCP,11983,0.590226,product_shipper
+5a7c3011cba026a3,Project Management,12106,0.086466,production_ml
+275976081ce1abf6,React,11811,0.424812,product_shipper
+969545dde1584d88,TypeScript,12048,0.191729,product_shipper
+e2a530e251d36750,Marketing,12037,0.394737,product_shipper
+cbbf241eebedba6f,Kafka,12114,0.469925,production_ml
+eda71746c01c3f46,JavaScript,12047,0.176692,product_shipper
+57a6d339e5166ac6,Feature Engineering,4809,0.860902,product_shipper
+a39f899adb17e2b4,Angular,12173,0.605263,product_shipper
+30f50f7fa4fa466a,SEO,11990,0.815789,candidate_matching
+faba1e00af8e6c89,Excel,12109,0.296992,product_shipper
+2a31aefa266db9cc,Accounting,12136,0.011278,matching_finetune_eval
+94abcb2d2773df65,Kubernetes,12071,0.454887,production_ml
+2dc010636b9dce91,Databricks,12244,0.680451,product_shipper
+324373d862ead39f,Node.js,11838,0.364662,product_shipper
+0f833996be38ff32,Content Writing,11948,0.071429,candidate_matching
+080baa17c90b5e97,Redux,12222,0.251880,product_shipper
+16df48936f837b40,Airflow,12105,0.109023,product_shipper
+aed31c11881f20f3,GraphQL,12027,0.650376,candidate_matching
+abb9f93b441c85c5,Object Detection,4705,0.289474,product_shipper
+2575ee3a445c5783,Webpack,12026,0.199248,product_shipper
+3eac21aeba54586f,Six Sigma,11991,0.342105,matching_finetune_eval
+7a9c94a8c201bcc2,SAP,11989,0.229323,matching_finetune_eval
+4ec7c53222c8a758,SQL,11935,0.748120,product_shipper
+750fda7b74e35f21,PowerPoint,11908,0.056391,candidate_matching
+03be4f85fe433179,Apache Flink,11958,0.808271,product_shipper
+e04eb29020eaa961,Sales,12138,0.274436,product_shipper
+b389db1475dc52e4,gRPC,11957,0.575188,product_shipper
+7d8a0838ce8e19b2,Django,11899,0.484962,product_shipper
+94dc3ea57721d541,Terraform,12187,0.672932,candidate_matching
+1cc9a79bdaf09793,MongoDB,11841,0.733083,retrieval_ops
+92f473809e5979a7,Spark,12038,0.402256,candidate_matching
+099af052b75b92b5,Scrum,12083,0.154135,product_shipper
+65db8c764322e4f5,Illustrator,12072,0.206767,matching_finetune_eval
+38a0963a6364b09a,Java,12049,0.161654,product_shipper
+764a51ba6de8ebf2,BigQuery,12108,0.763158,product_shipper
+521fe5c9ece1aa1f,Rust,11960,0.236842,product_shipper
+e5e239560bc125a2,HTML,12246,0.063910,product_shipper
+de5a1adf4fedcce1,Snowflake,12027,0.131579,candidate_matching
+ea2ebcbc108269c7,OpenCV,4803,0.432331,product_shipper
+4cd0e21a9a0795a1,Go,12049,0.048872,product_shipper
+9c3c0544259a604e,Spring Boot,11906,0.259398,product_shipper
+22db977b4caf6750,Kubeflow,4730,0.657895,production_ml
+5b79d0d574eedd09,Figma,12157,0.116541,product_shipper
+ae1b8c8635429669,Elasticsearch,1311,0.966165,candidate_matching
+4aa08612a8f6e9e4,CNN,4740,0.492481,product_shipper
+79f43c3b9c23fbdf,Azure,11828,0.387218,candidate_matching
+e9acff1bccde0d17,Prompt Engineering,5062,0.567669,candidate_matching
+de75f24335d8115e,MLOps,4727,0.868421,production_ml
+11a4a60b518bf249,Python,1378,0.214286,product_shipper
+635d603dcb715a7c,BM25,1382,0.913534,product_shipper
+f51442b277cd1b22,Recommendation Systems,5091,0.981203,product_shipper
+6aee0e678a168eea,FastAPI,11917,0.409774,product_shipper
+e3d79a8424f8b032,Hugging Face Transformers,5163,0.522556,semantic_search_quality
+a478b4566be5cb00,PostgreSQL,11983,0.627820,product_shipper
+1930e1e3cebb22a0,Vue.js,12142,0.477444,product_shipper
+de371adefe4de7fe,dbt,12046,0.379699,product_shipper
+052ff38befb367b0,Agile,12135,0.447368,product_shipper
+869349bb88e54ab4,Data Pipelines,11905,0.845865,production_ml
+1d9ce1cebabe5245,FAISS,5052,0.883459,semantic_search_quality
+b728120e9b299770,OpenSearch,1286,0.898496,product_shipper
+311fe3feed16b9cd,YOLO,4827,0.018797,product_shipper
+d74c76f638293fd5,REST APIs,12040,0.462406,product_shipper
+e8795e623be803af,PyTorch,1378,0.515038,product_shipper
+cfc35d18e7332fde,Qdrant,1379,0.266917,matching_finetune_eval
+c1c77e5bab22d16a,Computer Vision,4755,0.755639,product_shipper
+0d857f8cf2d76abb,Next.js,12058,0.612782,product_shipper
+b01e26d3f5a5130b,Tally,12030,0.003759,product_shipper
+e11cf22916d69f8a,Hadoop,11931,0.695489,product_shipper
+e75c517f8f4b0bc9,Salesforce CRM,12157,0.319549,matching_finetune_eval
+60a872f76d541bec,Microservices,11909,0.597744,production_ml
+631fd8e1ffac93e4,ETL,12068,0.710526,matching_finetune_eval
+f3f2184b56f946c6,LangChain,5162,0.327068,ranking_eval
+e2fde0483fc8158c,Pinecone,5062,0.041353,product_shipper
+31c2adc8a51004bb,Vector Search,5065,0.875940,retrieval_ops
+302049d75567a9b3,Embeddings,5080,0.921053,retrieval_ops
+34fb46c847bb9df9,Redis,11928,0.853383,product_shipper
+abb2a39d68dd5ed4,Forecasting,4676,0.169173,product_shipper
+d548c5b83fa61d8e,Docker,12062,0.635338,product_shipper
+60ec1732ff77892b,PEFT,1377,0.093985,product_shipper
+aa90a6f241121093,Data Science,4708,0.718045,product_shipper
+a01d874d87fa0ce5,Information Retrieval,5135,0.943609,product_shipper
+4cd3878f564ca086,CI/CD,12108,0.560150,production_ml
+b1a8f0a4d2aae9e0,MLflow,4691,0.687970,production_ml
+dcaa8e5ecb8d70ad,Machine Learning,1349,0.936090,product_shipper
+513575f364dd1b64,Sentence Transformers,5081,0.439850,semantic_search_quality
+197b0ff11cd452f0,scikit-learn,1288,0.500000,product_shipper
+36e64f19f57a05c8,CSS,12065,0.146617,candidate_matching
+ea3f2c381cdbe297,Weaviate,1389,0.906015,product_shipper
+3f29e2edecdbc0a4,Haystack,1333,0.823308,product_shipper
+cebea885ef40f295,TensorFlow,1381,0.830827,product_shipper
+2a8bdad2e9697326,Reinforcement Learning,4708,0.582707,ranking_eval
+505bd12938815abc,Deep Learning,1342,0.928571,candidate_matching
+f1e3a4221bbef787,Diffusion Models,4701,0.304511,product_shipper
+f2f6eba0f1d673c6,ASR,4788,0.545113,matching_finetune_eval
+a3e690053061793b,RAG,4995,0.184211,product_shipper
+de2187af3fb01170,LLMs,5094,0.312030,ranking_eval
+42284eaf394d84c0,Semantic Search,5087,0.951128,candidate_matching
+3d473feab56a422e,Learning to Rank,1383,0.973684,ranking_eval
+527ba7f732aa4673,QLoRA,1401,0.537594,matching_finetune_eval
+44f3c8ab3bb645ae,pgvector,1394,0.357143,retrieval_ops
+4f691bfe771e557c,Time Series,4686,0.281955,product_shipper
+2086d0f715be4a4d,LlamaIndex,1308,0.620301,product_shipper
+00797d717aff01ad,Vector Representations,4,0.334586,retrieval_ops
+df8b19b0a2224023,Content Matching,4,0.507519,product_shipper
+fe14b7e25767218d,Information Retrieval Systems,7,0.890977,product_shipper
+9f22a3317bac2962,Workflow Orchestration,3,0.078947,production_ml
+dc453b2d95200c3c,Natural Language Processing,2,0.793233,product_shipper
+f945bfb46b68c5ed,Search Backend,5,0.996241,candidate_matching
+65bfac137b13498f,Model Adaptation,4,0.665414,product_shipper
+b6596aec1553edac,Ranking Systems,4,0.800752,product_shipper
+30b6455701583a29,Text Encoders,5,0.530075,matching_finetune_eval
+6d11152e99940861,Search & Discovery,4,0.958647,product_shipper
+4b5d03699df8ca08,Search Infrastructure,3,0.988722,candidate_matching
+0bb1a2318f61b935,Indexing Algorithms,3,0.770677,product_shipper
+66a16477af3587de,Document Processing,1,0.033835,product_shipper
+5ef5fd08cc5a0707,Open-source ML libraries,3,0.785714,product_shipper

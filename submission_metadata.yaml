@@ -1,0 +1,120 @@
+# Redrob Hackathon — Submission Metadata
+# NOTE: fields marked TODO need your real details before upload.
+
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "TODO-your-team-name"
+
+primary_contact:
+  name: "TODO Full Name"
+  email: "TODO@example.com"
+  phone: "TODO +91-XXXXXXXXXX"
+
+team_members:
+  - name: "TODO Full Name"
+    email: "TODO@example.com"
+    role: "ML Engineer"
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "https://github.com/TODO_USERNAME/TODO_REPO"
+
+sandbox_link: "https://huggingface.co/spaces/TODO_USERNAME/redrob-ranker"  # TODO: deploy
+
+# OFFICIAL PATH = URSI-FL (Unified Role Semantic Index, Fixed-Leak anchors,
+# variant FL-E). The official ranker is offline, CPU-only, and loads NO model:
+# it reads only candidates.jsonl plus the precomputed role-semantic CSV
+# artifacts. Embeddings are used ONLY in precompute. The official score uses
+# ONE semantic signal (career-history role evidence) plus structured Redrob
+# behavioral/logistics/honeypot gates -- self-listed skills and summaries are
+# never scored (diagnostics only); Redrob-verified skill assessments contribute
+# a bounded [0.99, 1.02] confirmation factor. See URSI_FL.md.
+# Verified 2026-07-02: this command reproduces submission_ursi_fl_fl_e.csv
+# byte-identically.
+reproduce_command: "python3 rank_ursi_fl.py --candidates ./candidates.jsonl --role-projection ./artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv --out ./submission_ursi_fl_fl_e.csv"
+
+# One-time precompute (network allowed; produces the committed CSV artifacts):
+precompute_command: "python3 precompute_role_semantic_index_fl.py --candidates ./candidates.jsonl --variant fl_e --out-dir ./artifacts/role_semantic_index_fl/fl_e"
+
+# ============================================================================
+# Compute environment (measured on this machine)
+# ============================================================================
+compute:
+  platform: "MacBook Pro 13-inch M2"
+  cpu_cores: 8
+  ram_gb: 8                                     # ranker peaks ~1.7 GB; fits the cap with margin
+  python_version: "3.11.4"                      # ranker needs no third-party pkgs; precompute needs numpy
+  os: "macOS 14.8.7"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false            # official ranker reads only CSV artifacts; no model load, no API
+  pre_computation_required: true               # role-semantic index is precomputed once with Azure embeddings
+  pre_computation_time_minutes: 1              # ~26 s: 44 role docs + 48 titles + 16 anchors (14 role + 2 title) embedded once; FL-E also embeds 76 summary templates + 133 skill names for diagnostics only (never scored)
+  pre_computation_uses_network: true           # Azure text-embedding-3-large, precompute ONLY
+
+# Measured official ranking run: ~35 s wall-clock, ~1.6 GB peak RSS, 100,000 candidates,
+# CPU-only, offline, no model load. Output is byte-identical across runs (deterministic).
+
+# ============================================================================
+# AI tools declaration (honest)
+# ============================================================================
+ai_tools_used:
+  - "Cursor"
+  - "Claude"
+  - "Other"   # ml-intern (Hugging Face based) for adversarial audit; Azure OpenAI embeddings for a dev-time grade cross-check
+
+ai_usage_summary: |
+  AI tools assisted research, design discussion, and code review, with all
+  engineering decisions verified against the data and the validator:
+  - Cursor + Claude: pairing on dataset analysis, scoring design, and code review.
+  - ml-intern (HF-based agent): read-only adversarial audit of the methodology and
+    top-100 reasoning.
+  - Azure OpenAI text-embedding-3-large: used in the PRECOMPUTE step to score the
+    deduplicated role-history documents and titles against JD-derived contrastive
+    anchors. This produces frozen CSV artifacts.
+  Embeddings are used ONLY in precompute. The official ranker (rank_ursi_fl.py) loads
+  no model, makes no API calls, is deterministic, CPU-only, and offline; it reads
+  only candidates.jsonl plus the committed CSV artifacts. The official score uses a
+  single semantic signal (career-history role evidence); skills/summaries are never
+  scored, so keyword-stuffed skill sections have no effect.
+
+# ============================================================================
+# Approach summary
+# ============================================================================
+methodology_summary: |
+  URSI-FL (Unified Role Semantic Index, fixed-leak anchors; promoted variant FL-E).
+  We treat ranking as hybrid retrieval. The JD
+  is converted into a frozen multi-anchor contrastive query (7 positive/negative
+  evidence facets). We deduplicate the candidate pool's career-history documents
+  (the corpus collapses to 44 unique role descriptions and 48 titles, discovered —
+  not assumed) and score each unique role document ONCE with Azure
+  text-embedding-3-large, contrasting JD positive vs negative anchors and
+  rank-percentile normalizing within the discovered corpus. Role-level evidence is
+  projected to candidates by recency, duration, currentness, breadth, and a
+  separate semantic title-coherence guard. The offline CPU-only ranker combines
+  this single career-evidence signal with the raw semantic evidence of the
+  candidate's strongest role document, plus structured business gates (India/visa;
+  behavioral availability from last-active, open-to-work, recruiter responsiveness,
+  notice period and recent market activity; seniority; title coherence;
+  consulting/services and tenure guards; and a bounded [0.99-1.02] confirmation from
+  Redrob-verified JD-skill assessments). This keeps duration inside the projected
+  career-evidence signal without double-counting it in the best-role slot. Profile
+  summaries (76 templates) and skill names (133) are embedded with the same model
+  for false-positive diagnostics only and are never scored, so keyword-stuffed skill
+  sections cannot rescue a weak profile. Structural impossibilities (honeypots) and tech
+  anachronisms force a score of 0 (95 caught). There are NO manual template grades
+  and NO career-evidence keyword lexicons in the official path; the 44 templates
+  are used only as an after-the-fact audit. The top-100 is 100% India-based, all
+  technical (search/ranking/retrieval/recsys/NLP/applied-ML), zero honeypots, and
+  the ranking is stable to dropping any single JD anchor (Jaccard@100 0.87-1.0).
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true

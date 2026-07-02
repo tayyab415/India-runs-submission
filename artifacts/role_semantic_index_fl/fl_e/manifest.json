@@ -1,0 +1,21 @@
+{
+  "artifact_name": "role_semantic_index_fl",
+  "variant": "fl_e",
+  "created_at": "2026-07-02",
+  "embedding_model": "azure:text-embedding-3-large",
+  "embedding_used_only_in_precompute": true,
+  "summary_and_skill_embeddings_used_for_diagnostics": true,
+  "summary_and_skill_embeddings_used_for_official_ranking": false,
+  "manual_template_grades_used_for_scoring": false,
+  "template_foreknowledge_used": false,
+  "official_ranker_requires_network": false,
+  "candidates": 100000,
+  "roles": 300171,
+  "unique_role_docs": 44,
+  "unique_titles": 48,
+  "unique_summary_templates": 76,
+  "unique_skills": 133,
+  "normalization": "rank_percentile_within_unique_role_docs",
+  "role_neg_lambda": 0.7,
+  "ref_date": "2026-06-26"
+}

@@ -1,0 +1,8 @@
+# The official ranking step (rank_ursi_fl.py) needs ZERO third-party packages --
+# it is pure Python standard library (csv, json, re, argparse, pathlib).
+#
+# numpy is needed ONLY for the optional, network-allowed precompute step
+# (precompute_role_semantic_index_fl.py), which is not required to reproduce
+# the submission CSV -- the frozen artifacts it produces are already committed
+# under artifacts/role_semantic_index_fl/fl_e/.
+numpy>=1.24,<3

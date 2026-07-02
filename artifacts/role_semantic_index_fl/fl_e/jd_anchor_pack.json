@@ -1,0 +1,51 @@
+{
+  "name": "fl_e",
+  "source": "HANDOFF_URSI_FL.md fixed-leak anchor variant",
+  "role_neg_lambda": 0.7,
+  "families": [
+    {
+      "name": "retrieval_ops",
+      "weight": 0.2,
+      "positive": "Engineer who built and operated production embeddings-based retrieval deployed to real users: vector databases, hybrid search, index refresh, embedding drift handling, retrieval-quality regression, latency, monitoring, and search infrastructure ownership.",
+      "negative": "Prompt-engineering tutorial, demo chatbot, thin API-integration side project, or AI-assisted content workflow centered on canned responses, productivity automation, or content generation rather than an owned production search service."
+    },
+    {
+      "name": "ranking_eval",
+      "weight": 0.18,
+      "positive": "Hands-on ranking, recommendation, or search engineer who built learning-to-rank, feed ranking, recommendation, personalization, relevance evaluation with NDCG, MRR, MAP, offline-online correlation, A/B testing, and feedback loops.",
+      "negative": "Generic data analyst, BI dashboard, business KPI reporting, SEO search traffic, support knowledge base, or process analytics without ranking models, recommender systems, or relevance evaluation."
+    },
+    {
+      "name": "candidate_matching",
+      "weight": 0.16,
+      "positive": "Engineer who built candidate-job matching, recruiter-facing semantic search, talent-marketplace ranking, or large-scale relevance and matching infrastructure for HR or recruiting products.",
+      "negative": "HR, recruiting, or talent-acquisition operations, sourcing, or coordination work that uses tools but does not build matching, search, or ranking systems."
+    },
+    {
+      "name": "semantic_search_quality",
+      "weight": 0.15,
+      "positive": "Semantic search engineer who built dense retrieval over a large document corpus: sentence-transformers, BGE or E5 embeddings, FAISS or vector indexes, query expansion, BM25-to-hybrid migration, human relevance judgments, and measurable search-relevance improvements in production.",
+      "negative": "Search engine optimization, content search traffic, support knowledge-base maintenance, or keyword search usage without building dense retrieval, vector indexes, relevance evaluation, or search systems."
+    },
+    {
+      "name": "production_ml",
+      "weight": 0.13,
+      "positive": "Engineer who shipped production machine learning: model serving, training and inference pipelines, evaluation harnesses, monitoring, and Python or backend ownership of deployed models used by real users.",
+      "negative": "Computer-vision image moderation or object-detection model work using PyTorch, ResNet, YOLO, OpenCV, labeled image datasets, precision/recall monitoring, or image and video safety pipelines. Speech recognition, TTS, audio modeling, robotics, perception, CAD, SolidWorks, FEA, DFMA, production tooling, hardware scale-up, mechanical engineering, or civil engineering design work."
+    },
+    {
+      "name": "matching_finetune_eval",
+      "weight": 0.1,
+      "positive": "Engineer who fine-tuned encoder or LLM models for recruiter relevance or candidate-JD matching, using LoRA, QLoRA, PEFT adapters, LLM-based re-ranking, distillation to low-latency rankers, preference-pair curation, relevance-label pipelines, ranking evaluation harnesses, and deployed serving to improve matching quality.",
+      "negative": "LLM tutorial, prompt engineering, or chatbot wrapper work without labels, ranking metrics, production serving, or matching infrastructure."
+    },
+    {
+      "name": "product_shipper",
+      "weight": 0.08,
+      "positive": "Product-minded senior individual contributor who ships useful ranking or matching systems quickly, writes production code recently, iterates with PMs, recruiters, and users, and makes pragmatic ML tradeoffs in a startup.",
+      "negative": "Management-only lead, title-chasing architect, or non-coding strategist who has not recently written production code and has no product-facing ML delivery."
+    }
+  ],
+  "title_positive": "machine learning engineer, applied scientist, search engineer, ranking engineer, retrieval engineer, recommendation systems engineer, NLP engineer, data scientist, production ML or backend engineer who builds search, ranking, retrieval, or matching systems.",
+  "title_negative": "marketing, sales, customer support, accounting, finance, human resources, recruiting, content writing, graphic design, operations, project management, business analysis, computer vision, speech recognition, robotics, perception, civil engineering, or mechanical engineering role."
+}

@@ -1,0 +1,23 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# The 100K-candidate dataset is distributed by the organizers, not redistributed here.
+candidates.jsonl
+candidates.jsonl.gz
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Secrets -- never commit
+.env
+*.env
+
+# OS cruft
+.DS_Store
+
+# Scratch reproduction output (regenerate with the documented command)
+/tmp_*.csv
