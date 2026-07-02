@@ -1,15 +1,3 @@
----
-title: URSI-FL Candidate Ranker
-emoji: "\U0001F3AF"
-colorFrom: blue
-colorTo: indigo
-sdk: gradio
-sdk_version: "5.34.2"
-app_file: app.py
-pinned: false
-license: mit
----
-
 # URSI-FL — Redrob Intelligent Candidate Ranking
 
 **Team 1Horizon** — [Tayyab Khan](https://github.com/tayyab415) · [Sahil Tanna](https://github.com/coldboxer007)
@@ -65,21 +53,32 @@ This is why the final ranker is fast and offline. The expensive semantic work is
 done once in precompute and frozen into CSV artifacts. The official submission
 command only reads `candidates.jsonl` plus those local artifacts.
 
-## Honeypot Moment: Llama 3 Before Llama 3 Existed
+## Honeypot Moment: Strong AI Text With Impossible Dates
 
 The second dataset moment was when we found profiles that were not merely weak
 matches, but impossible profiles.
 
-One specific pattern was a career-history template claiming work like
-fine-tuning **Llama 3** before Llama 3 had even been released. A plain semantic
-model can easily get excited by that kind of text because it contains the right
-AI vocabulary: Llama, fine-tuning, model work, production language. But for this
-challenge, that is exactly the sort of profile we did not want to include.
+The clearest example was a repeated career-history template that looked strong
+semantically but failed a date check. The template said the candidate had:
 
-So we treated honeypots as **structural consistency problems**, not as semantic
-ranking problems. If a profile claims a technology before that technology
-existed, or if its role timeline cannot be true, it should not be softly
-penalized. It should score 0.
+> Fine-tuned LLaMA-2-7B and Mistral-7B variants using LoRA and QLoRA for domain-specific candidate-JD matching.
+
+It also described preference-pair generation from recruiter labels, a ranking
+evaluation harness, BentoML/Kubernetes deployment, INT8 quantization, batching,
+and a GPT-3.5 fallback. On meaning alone, that sounds very close to the JD. But
+some roles carrying this template ended before LLaMA 2, Mistral-7B, QLoRA, or
+GPT-3.5 were publicly available. We treated that as a factual impossibility,
+not as a merely weaker fit.
+
+We found the same class of issue in another template that described a RAG
+customer-support chatbot using an answer-generation layer that was "initially
+GPT-4, then a fine-tuned smaller model for cost control" inside roles ending
+before GPT-4 was released.
+
+So the honeypot rule became formal: semantic relevance can never override
+timeline impossibility. If a role claims a technology before that technology
+existed, or if its role timeline cannot be true, the candidate is not softly
+penalized. The candidate scores 0.
 
 The shared `ursi_fl_common.py` logic catches cases such as:
 

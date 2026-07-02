@@ -123,7 +123,7 @@
   <rect class="panel-purple" x="28" y="724" width="1480" height="94"/>
   <text class="stage-blue" x="82" y="768">Structural trap check</text>
   <rect class="box-red" x="370" y="742" width="286" height="56"/>
-  <text class="label" x="513" y="765" text-anchor="middle">Llama 3 before release?</text>
+  <text class="label" x="513" y="765" text-anchor="middle">AI tech before release?</text>
   <text class="small" x="513" y="786" text-anchor="middle">tech-date impossibility → score 0</text>
   <rect class="box" x="704" y="742" width="252" height="56"/>
   <text class="label" x="830" y="766" text-anchor="middle">Role longer than career?</text>
