@@ -19,9 +19,9 @@ team_members:
 # ============================================================================
 # Code and reproducibility
 # ============================================================================
-github_repo: "https://github.com/TODO_USERNAME/TODO_REPO"
+github_repo: "https://github.com/tayyab415/India-runs-submission"
 
-sandbox_link: "https://huggingface.co/spaces/TODO_USERNAME/redrob-ranker"  # TODO: deploy
+sandbox_link: "https://huggingface.co/spaces/tyb343/India-runs-submission"
 
 # OFFICIAL PATH = URSI-FL (Unified Role Semantic Index, Fixed-Leak anchors,
 # variant FL-E). The official ranker is offline, CPU-only, and loads NO model:
