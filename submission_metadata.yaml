@@ -1,5 +1,5 @@
 # Redrob Hackathon — Submission Metadata
-# NOTE: fields marked TODO need your real details before upload.
+# Mirrors the portal metadata for the final submission.
 
 # ============================================================================
 # Team identity
@@ -7,21 +7,24 @@
 team_name: "1Horizon"
 
 primary_contact:
-  name: "TODO Full Name"
-  email: "TODO@example.com"
-  phone: "TODO +91-XXXXXXXXXX"
+  name: "Tayyab Khan"
+  email: "tayyab.khn@outlook.com"
+  phone: "+91 7007623382"
 
 team_members:
-  - name: "TODO Full Name"
-    email: "TODO@example.com"
-    role: "ML Engineer"
+  - name: "Tayyab Khan"
+    email: "tayyab.khn@outlook.com"
+    role: "Team Lead"
+  - name: "Sahil Tanna"
+    email: "sahiltanna7@gmail.com"
+    role: "Team Member"
 
 # ============================================================================
 # Code and reproducibility
 # ============================================================================
 github_repo: "https://github.com/tayyab415/India-runs-submission"
 
-sandbox_link: "https://huggingface.co/spaces/tyb343/India-runs-submission"
+sandbox_link: "https://tyb343-india-runs-submission.hf.space"
 
 # OFFICIAL PATH = URSI-FL (Unified Role Semantic Index, Fixed-Leak anchors,
 # variant FL-E). The official ranker is offline, CPU-only, and loads NO model:
@@ -62,12 +65,13 @@ compute:
 ai_tools_used:
   - "Cursor"
   - "Claude"
-  - "Other"   # ml-intern (Hugging Face based) for adversarial audit; Azure OpenAI embeddings for a dev-time grade cross-check
+  - "Other"   # OpenAI Codex for final packaging checks; ml-intern for adversarial audit; Azure OpenAI embeddings for semantic precompute
 
 ai_usage_summary: |
   AI tools assisted research, design discussion, and code review, with all
   engineering decisions verified against the data and the validator:
   - Cursor + Claude: pairing on dataset analysis, scoring design, and code review.
+  - OpenAI Codex: final metadata/repository packaging checks.
   - ml-intern (HF-based agent): read-only adversarial audit of the methodology and
     top-100 reasoning.
   - Azure OpenAI text-embedding-3-large: used in the PRECOMPUTE step to score the

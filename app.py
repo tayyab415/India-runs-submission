@@ -1,7 +1,8 @@
 """URSI-FL ranking sandbox — Gradio interface for the Redrob hackathon.
 
 Accepts a candidate file (JSONL, JSON array, or CSV with a 'json' column),
-runs the offline ranker, and returns the ranked CSV for download.
+runs the offline ranker, and returns the ranked CSV for download + a preview
+table.
 """
 
 import csv
@@ -14,6 +15,7 @@ import traceback
 from pathlib import Path
 
 import gradio as gr
+import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -132,26 +134,29 @@ def validate_candidate(c: dict, idx: int) -> list[str]:
     return issues
 
 
-def rank_candidates(file_obj) -> tuple[str, str | None]:
-    """Run the URSI-FL ranker on the uploaded file and return (status, csv_path)."""
+def rank_candidates(file_obj) -> tuple[str, pd.DataFrame, str | None]:
+    """Run the URSI-FL ranker on the uploaded file."""
+    empty_df = pd.DataFrame(columns=["rank", "candidate_id", "score", "reasoning"])
+
     if file_obj is None:
-        return "No file uploaded.", None
+        return "No file uploaded.", empty_df, None
 
     file_path = file_obj.name if hasattr(file_obj, "name") else str(file_obj)
 
     try:
         candidates = parse_upload(file_path)
     except Exception as e:
-        return f"Failed to parse file: {e}\n\n{traceback.format_exc()}", None
+        return f"Failed to parse file: {e}\n\n{traceback.format_exc()}", empty_df, None
 
     if not candidates:
-        return "File parsed but contained 0 candidates.", None
+        return "File parsed but contained 0 candidates.", empty_df, None
 
     if len(candidates) > MAX_CANDIDATES:
         return (
             f"Upload contains {len(candidates)} candidates — this sandbox accepts "
             f"at most {MAX_CANDIDATES} for demo purposes. The full 100K pool runs "
             f"locally via reproduce.sh.",
+            empty_df,
             None,
         )
 
@@ -159,7 +164,7 @@ def rank_candidates(file_obj) -> tuple[str, str | None]:
     for i, c in enumerate(candidates):
         issues.extend(validate_candidate(c, i))
     if issues:
-        return "Validation errors:\n" + "\n".join(issues[:20]), None
+        return "Validation errors:\n" + "\n".join(issues[:20]), empty_df, None
 
     proj = load_role_projection(ROLE_PROJ_PATH)
     role_doc_evidence = load_role_doc_evidence(UNIQUE_ROLE_PATH)
@@ -178,6 +183,7 @@ def rank_candidates(file_obj) -> tuple[str, str | None]:
     top_n = min(len(scored), 100)
     top = [r for _, _, r in scored[:top_n]]
 
+    csv_rows = []
     with tempfile.NamedTemporaryFile(
         mode="w", suffix=".csv", delete=False, dir=REPO_ROOT, prefix="sandbox_out_"
     ) as f:
@@ -188,12 +194,16 @@ def rank_candidates(file_obj) -> tuple[str, str | None]:
         for rank, row in enumerate(top, start=1):
             score = max(0.0, min(1.0, min(float(row["score"]), prev - 1e-9)))
             prev = score
-            w.writerow([
-                row["candidate_id"],
-                rank,
-                f"{score:.9f}",
-                build_reasoning(row, rank, previews, role_meta),
-            ])
+            reasoning = build_reasoning(row, rank, previews, role_meta)
+            w.writerow([row["candidate_id"], rank, f"{score:.9f}", reasoning])
+            csv_rows.append({
+                "rank": rank,
+                "candidate_id": row["candidate_id"],
+                "score": round(score, 4),
+                "reasoning": reasoning,
+            })
+
+    df = pd.DataFrame(csv_rows)
 
     status_lines = [
         f"Ranked {len(candidates)} candidates — top {top_n} written.",
@@ -208,7 +218,7 @@ def rank_candidates(file_obj) -> tuple[str, str | None]:
     if honeypots:
         status_lines.append(f"{honeypots} honeypot(s) detected and scored 0.")
 
-    return "\n".join(status_lines), out_path
+    return "\n".join(status_lines), df, out_path
 
 
 with gr.Blocks(title="URSI-FL Candidate Ranker — Redrob Hackathon Sandbox") as app:
@@ -225,10 +235,20 @@ with gr.Blocks(title="URSI-FL Candidate Ranker — Redrob Hackathon Sandbox") as
             file_types=[".jsonl", ".json", ".csv"],
         )
     run_btn = gr.Button("Run Ranker", variant="primary")
-    status_box = gr.Textbox(label="Status", lines=5, interactive=False)
-    output_file = gr.File(label="Download ranked CSV")
+    status_box = gr.Textbox(label="Status", lines=3, interactive=False)
+    results_table = gr.Dataframe(
+        label="Ranking Preview",
+        headers=["rank", "candidate_id", "score", "reasoning"],
+        wrap=True,
+        interactive=False,
+    )
+    output_file = gr.File(label="Download full CSV")
 
-    run_btn.click(rank_candidates, inputs=[file_input], outputs=[status_box, output_file])
+    run_btn.click(
+        rank_candidates,
+        inputs=[file_input],
+        outputs=[status_box, results_table, output_file],
+    )
 
 
 if __name__ == "__main__":

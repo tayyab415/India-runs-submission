@@ -1,3 +1,4 @@
 # Official ranking step (rank_ursi_fl.py) uses ONLY the Python standard library.
 # gradio is needed for the HuggingFace Space sandbox app (app.py).
 gradio>=4.0,<6
+pandas
