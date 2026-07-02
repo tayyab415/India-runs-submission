@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="880" viewBox="0 0 1536 880" role="img" aria-labelledby="title desc">
+  <title id="title">Dataset discovery architecture</title>
+  <desc id="desc">A formal architecture diagram showing how 100,000 candidates collapse into 44 career templates and then into an offline ranking spine with honeypot checks.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#5f6b7a"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfdff; }
+      .title { font: 700 54px Inter, Arial, sans-serif; fill: #0b1220; letter-spacing: .2px; }
+      .subtitle { font: 400 20px Inter, Arial, sans-serif; fill: #334155; }
+      .panel-blue { fill: #ffffff; stroke: #2563eb; stroke-width: 1.4; rx: 10; filter: url(#shadow); }
+      .panel-teal { fill: #ffffff; stroke: #0891b2; stroke-width: 1.4; rx: 10; filter: url(#shadow); }
+      .panel-purple { fill: #ffffff; stroke: #7c3aed; stroke-width: 1.2; rx: 10; }
+      .stage-blue { font: 700 28px Inter, Arial, sans-serif; fill: #2563eb; }
+      .stage-teal { font: 700 28px Inter, Arial, sans-serif; fill: #0f949b; }
+      .box { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.2; rx: 8; }
+      .box-blue { fill: #1f6feb; stroke: #1f6feb; rx: 8; }
+      .box-teal { fill: #0f9fa6; stroke: #0f9fa6; rx: 8; }
+      .box-orange { fill: #f97316; stroke: #f97316; rx: 8; }
+      .box-red { fill: #fff7f7; stroke: #ef4444; stroke-width: 1.4; rx: 8; }
+      .box-dash { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.3; stroke-dasharray: 6 6; rx: 8; }
+      .label { font: 500 18px Inter, Arial, sans-serif; fill: #0f172a; }
+      .label-white { font: 600 18px Inter, Arial, sans-serif; fill: #ffffff; }
+      .small { font: 400 15px Inter, Arial, sans-serif; fill: #334155; }
+      .small-white { font: 400 15px Inter, Arial, sans-serif; fill: #eaf7ff; }
+      .mono { font: 600 16px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #0f172a; }
+      .metric { font: 800 34px Inter, Arial, sans-serif; fill: #0f172a; }
+      .line { stroke: #5f6b7a; stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+      .line-soft { stroke: #94a3b8; stroke-width: 1.2; fill: none; marker-end: url(#arrow); }
+      .icon { font: 700 24px Inter, Arial, sans-serif; fill: #0f172a; }
+      .icon-white { font: 700 24px Inter, Arial, sans-serif; fill: #ffffff; }
+      .foot { font: 400 18px Inter, Arial, sans-serif; fill: #334155; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1536" height="880"/>
+  <text class="title" x="768" y="70" text-anchor="middle">Dataset Discovery Architecture</text>
+  <text class="subtitle" x="768" y="104" text-anchor="middle">The breakthrough was not a bigger model. It was finding the dataset structure.</text>
+
+  <rect class="panel-blue" x="28" y="142" width="468" height="558"/>
+  <text class="stage-blue" x="262" y="184" text-anchor="middle">Before the breakthrough</text>
+
+  <rect class="box" x="72" y="224" width="180" height="70"/>
+  <text class="icon" x="96" y="267">01</text>
+  <text class="label" x="135" y="253">100,000</text>
+  <text class="small" x="135" y="277">candidate profiles</text>
+
+  <rect class="box" x="72" y="332" width="180" height="70"/>
+  <text class="icon" x="96" y="375">02</text>
+  <text class="label" x="135" y="361">300,171</text>
+  <text class="small" x="135" y="385">career rows</text>
+
+  <rect class="box-dash" x="292" y="252" width="156" height="124"/>
+  <text class="small" x="370" y="292" text-anchor="middle">If scored profile</text>
+  <text class="small" x="370" y="318" text-anchor="middle">by profile, the</text>
+  <text class="small" x="370" y="344" text-anchor="middle">problem looked huge</text>
+
+  <path class="line-soft" d="M252 259 H286"/>
+  <path class="line-soft" d="M252 367 H286"/>
+
+  <rect class="box-blue" x="92" y="472" width="336" height="76"/>
+  <text class="label-white" x="260" y="503" text-anchor="middle">Initial pressure point</text>
+  <text class="small-white" x="260" y="529" text-anchor="middle">How do we score 100K profiles offline?</text>
+
+  <rect class="box" x="92" y="592" width="336" height="64"/>
+  <text class="small" x="260" y="619" text-anchor="middle">Answer: stop treating the corpus</text>
+  <text class="small" x="260" y="644" text-anchor="middle">as 100K unrelated resumes.</text>
+
+  <rect class="panel-teal" x="536" y="142" width="464" height="558"/>
+  <text class="stage-teal" x="768" y="184" text-anchor="middle">Breakthrough: closed corpus</text>
+
+  <rect class="box-teal" x="610" y="232" width="316" height="78"/>
+  <text class="label-white" x="768" y="263" text-anchor="middle">Deduplicate career text</text>
+  <text class="small-white" x="768" y="289" text-anchor="middle">content hashing over career descriptions</text>
+
+  <path class="line" d="M768 310 V356"/>
+
+  <rect class="box-blue" x="610" y="356" width="316" height="98"/>
+  <text class="metric" x="768" y="397" text-anchor="middle" fill="#ffffff">44</text>
+  <text class="label-white" x="768" y="424" text-anchor="middle">unique role-description templates</text>
+
+  <path class="line" d="M768 454 V500"/>
+
+  <rect class="box-teal" x="610" y="500" width="316" height="76"/>
+  <text class="label-white" x="768" y="531" text-anchor="middle">48 title templates</text>
+  <text class="small-white" x="768" y="557" text-anchor="middle">sampled from in-domain title pools</text>
+
+  <rect class="box-dash" x="586" y="616" width="364" height="56"/>
+  <text class="small" x="768" y="650" text-anchor="middle">Score 44 role documents once, then project to candidates.</text>
+
+  <path class="line" d="M496 421 H530"/>
+  <path class="line" d="M1000 421 H1034"/>
+
+  <rect class="panel-teal" x="1040" y="142" width="468" height="558"/>
+  <text class="stage-teal" x="1274" y="184" text-anchor="middle">What this unlocked</text>
+
+  <rect class="box-blue" x="1086" y="228" width="330" height="66"/>
+  <text class="label-white" x="1251" y="254" text-anchor="middle">Azure embedding precompute</text>
+  <text class="small-white" x="1251" y="278" text-anchor="middle">44 role docs + JD anchors only</text>
+
+  <path class="line" d="M1251 294 V328"/>
+
+  <rect class="box-teal" x="1086" y="328" width="330" height="66"/>
+  <text class="label-white" x="1251" y="354" text-anchor="middle">Candidate projection</text>
+  <text class="small-white" x="1251" y="378" text-anchor="middle">recency, duration, currentness, breadth</text>
+
+  <path class="line" d="M1251 394 V428"/>
+
+  <rect class="box" x="1086" y="428" width="330" height="70"/>
+  <text class="label" x="1251" y="456" text-anchor="middle">Offline ranker</text>
+  <text class="small" x="1251" y="481" text-anchor="middle">no network, no model load, stdlib only</text>
+
+  <path class="line" d="M1251 498 V534"/>
+
+  <rect class="box-orange" x="1086" y="534" width="330" height="72"/>
+  <text class="label-white" x="1251" y="563" text-anchor="middle">Top 100 submission.csv</text>
+  <text class="small-white" x="1251" y="588" text-anchor="middle">grounded candidate reasoning</text>
+
+  <rect class="panel-purple" x="28" y="724" width="1480" height="94"/>
+  <text class="stage-blue" x="82" y="768">Structural trap check</text>
+  <rect class="box-red" x="370" y="742" width="286" height="56"/>
+  <text class="label" x="513" y="765" text-anchor="middle">Llama 3 before release?</text>
+  <text class="small" x="513" y="786" text-anchor="middle">tech-date impossibility → score 0</text>
+  <rect class="box" x="704" y="742" width="252" height="56"/>
+  <text class="label" x="830" y="766" text-anchor="middle">Role longer than career?</text>
+  <text class="small" x="830" y="787" text-anchor="middle">timeline consistency check</text>
+  <rect class="box" x="1004" y="742" width="252" height="56"/>
+  <text class="label" x="1130" y="766" text-anchor="middle">Expert skill, 0 months?</text>
+  <text class="small" x="1130" y="787" text-anchor="middle">planted honeypot pattern</text>
+  <text class="foot" x="768" y="852" text-anchor="middle">The dataset analysis turned ranking from brute-force resume scoring into a small, auditable semantic spine plus structural gates.</text>
+</svg>

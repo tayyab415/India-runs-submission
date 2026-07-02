@@ -1,100 +1,291 @@
----
-title: URSI-FL Candidate Ranker
-emoji: "🎯"
-colorFrom: blue
-colorTo: indigo
-sdk: gradio
-sdk_version: "5.34.2"
-app_file: app.py
-pinned: false
-license: mit
----
+# Dataset Overview
 
-# Redrob Candidate Ranking — Senior AI Engineer (Founding Team)
+This repository is our final submission system for the **Redrob Intelligent
+Candidate Discovery & Ranking Challenge**. The task sounds simple on paper:
+find the best 100 candidates for Redrob AI's **Senior AI Engineer, Founding
+Team** role. In practice, the released pool has **100,000 candidate profiles**
+and **300,171 career-history rows**, so our first reaction was honestly: how do
+we score this many profiles deeply, offline, and still keep the reasoning
+grounded?
 
-**URSI-FL (Unified Role Semantic Index, Fixed-Leak anchors — promoted variant
-FL-E)** — the submitted ranker for the Redrob Intelligent Candidate Discovery
-& Ranking Challenge. It produces the top-100 candidates for the released JD
-with a grounded, JD-connected 1–2 sentence reasoning for each.
+The first real breakthrough came from looking at the data instead of immediately
+tuning the scoring formula. We discovered that the 300,171 career-history rows
+were not 300,171 unique pieces of evidence. They deduplicated to only **44
+unique career-history role-description templates** and **48 title templates**.
 
-Full methodology: **[`METHODOLOGY_URSI_FL.md`](METHODOLOGY_URSI_FL.md)** — a
-self-contained description of the submitted system (architecture, scoring
-formula, every gate mapped to a JD requirement, honeypot logic, validation
-evidence). Iteration history: [`URSI_FL.md`](URSI_FL.md), [`URSI_V3.md`](URSI_V3.md).
+That changed the problem completely.
 
-## What's in this repo
+Before that point, the method looked like it needed to understand 100,000
+profiles one by one. After that point, the better strategy was clear: understand
+the **44 career templates** extremely well, because those templates were the
+major evidence carriers in the dataset, then project that evidence back to each
+candidate using their actual duration, recency, current role, title coherence,
+availability, location, and other structured signals.
 
-This repo contains **only the official, graded reproduction path** — the
-ranking step that must run in ≤5 min, ≤16 GB RAM, CPU-only, no network
-(per `submission_spec.md` §3). Nothing here is required beyond what's listed
-below; there is no hidden step and no manual editing of the output CSV.
+![Dataset discovery architecture](assets/architecture-diagrams/readme-dataset-discovery-architecture.png)
 
-## Quickstart (reproduce the submission)
+## Breakthrough: 100,000 Candidates, 44 Career Templates
+
+The 44-template finding became the center of the whole approach. It told us
+that the dataset was synthetic and closed, and that career-history descriptions
+were the most reliable place to look for real role fit.
+
+This also matched the job description. Redrob's JD warns that self-listed AI
+skills can be misleading: someone can list every modern AI keyword and still
+not be a fit if their actual work history is marketing, operations, support, or
+generic wrapper work. So we decided not to let skills or summaries rescue a
+weak career history.
+
+So the semantic spine of the method is deliberately small and auditable:
+
+- deduplicate career-history descriptions;
+- score the **44 unique role documents** against the JD;
+- compute title coherence over the **48 unique titles**;
+- project role evidence back to candidates;
+- use structured gates for availability, location, seniority, consulting-only
+  careers, serial job-hopping, and honeypots.
+
+This is why the final ranker is fast and offline. The expensive semantic work is
+done once in precompute and frozen into CSV artifacts. The official submission
+command only reads `candidates.jsonl` plus those local artifacts.
+
+## Honeypot Moment: Llama 3 Before Llama 3 Existed
+
+The second dataset moment was when we found profiles that were not merely weak
+matches, but impossible profiles.
+
+One specific pattern was a career-history template claiming work like
+fine-tuning **Llama 3** before Llama 3 had even been released. A plain semantic
+model can easily get excited by that kind of text because it contains the right
+AI vocabulary: Llama, fine-tuning, model work, production language. But for this
+challenge, that is exactly the sort of profile we did not want to include.
+
+So we treated honeypots as **structural consistency problems**, not as semantic
+ranking problems. If a profile claims a technology before that technology
+existed, or if its role timeline cannot be true, it should not be softly
+penalized. It should score 0.
+
+The shared `ursi_fl_common.py` logic catches cases such as:
+
+- role dates that predate the public release of a technology mentioned in the
+  role description;
+- a role lasting longer than the candidate's stated entire career;
+- claimed experience exceeding what the timeline allows;
+- expert-level skills with zero months of use.
+
+On the full pool, the system zeroes **95** structurally impossible profiles and
+places **0 honeypots in the top 100**.
+
+## Job Description Overview
+
+After the dataset pass, we stepped back from the metrics and asked a simpler
+question: what is the JD actually asking for?
+
+We interpreted it as a precision-search problem, not a generic "AI candidate"
+problem. Redrob is not looking for someone who merely knows LLM tools or has
+many AI keywords in their skills list. The role is for a hands-on founding-team
+engineer who can build production search, retrieval, ranking, recommendation,
+matching, or evaluation systems that connect candidates and jobs.
+
+The target profile is therefore not "someone with many AI keywords." The target
+is closer to:
+
+- recent, hands-on production ML/search/retrieval/ranking work;
+- evidence of evaluation rigor, such as ranking metrics, feedback loops, or
+  online/offline evaluation;
+- backend/data infrastructure that supports deployed ML systems;
+- senior but still IC/hands-on experience;
+- strong availability and logistics for an India-focused hiring process.
+
+The JD also tells us what not to reward: AI-curious non-engineers, pure wrapper
+projects, generic RAG chatbots, nontechnical current titles, consulting-only
+careers, title-chasing job histories, and unavailable candidates.
+
+## Initial Mistakes and Iterations
+
+The earlier methodology files are useful because they show the mistakes and
+corrections that led to the final system.
+
+At the beginning, the scoring was too score-first. We were experimenting with
+semantic similarity and candidate scoring before the JD interpretation was
+sharp enough. That made some adjacent AI-looking profiles appear stronger than
+they should have been.
+
+Then we moved into anchor-based scoring. That was the right direction, but the
+anchor design itself went through iterations. Some versions were too broad and
+could reward generic AI language. Some were too narrow and missed plain-language
+but highly relevant search/ranking work. Toward the end, we made the anchors
+more expressive about the actual JD: production retrieval, ranking evaluation,
+candidate-job matching, semantic search quality, matching/fine-tuning with
+evaluation, and the negative look-alikes that the JD warns about.
+
+![JD iteration architecture](assets/architecture-diagrams/readme-jd-iteration-architecture.png)
+
+The main corrections were:
+
+1. **We moved from score-first to JD-first.** The target candidate definition
+   had to come before the scoring formula.
+2. **We stopped letting title noise reorder good candidates.** In this dataset,
+   the same strong career template can appear under several relevant titles.
+   V1 treated title coherence too much like a continuous score. Later versions
+   made title a contradiction guard instead of a booster.
+3. **We restored JD-named negative gates.** The JD explicitly warns about
+   consulting-only careers and title-chasing. Earlier URSI versions had dropped
+   those baseline gates, so V3 restored them as negative-only multipliers.
+4. **We fixed best-role double-counting.** V3.1 separated raw best-role quality
+   from projected duration. V3.2 then gated that raw uplift by relevant-month
+   coverage so one short strong role could not borrow full top-template credit.
+5. **We rejected tempting anchor variants.** Some FL variants improved one
+   narrow gap but admitted sentinel false positives. FL-E was promoted because
+   it passed the validator, determinism check, honeypot audit, template audit,
+   sentinel sweep, and readable top-100 review.
+
+The final result is **URSI-FL, variant FL-E**: Unified Role Semantic Index with
+fixed-leak anchors and conservative business gates.
+
+## Major Methodology: URSI-FL FL-E
+
+URSI-FL treats the problem as hybrid retrieval with a clean boundary between
+precompute and official ranking.
+
+![URSI-FL detailed computation architecture](assets/architecture-diagrams/ursi-fl-detailed-computation-architecture.png)
+
+### Stage A: Network-Allowed Precompute
+
+The optional precompute step uses Azure OpenAI `text-embedding-3-large` to embed
+only the compact discovered corpus:
+
+- 44 career-history role templates;
+- 48 title templates;
+- JD-derived positive and negative anchors;
+- diagnostics-only summary and skill templates.
+
+Each role document is scored through contrastive JD facets: what the JD wants
+versus what the JD warns can look similar but is not the role. The resulting
+role evidence is percentile-normalized inside the closed 44-template corpus and
+saved into frozen CSV artifacts under:
+
+```text
+artifacts/role_semantic_index_fl/fl_e/
+```
+
+Profile summaries and self-listed skills are embedded only for diagnostics and
+false-positive review. They do **not** act as scoring boosters. Redrob-verified
+skill assessments are used only as a tiny bounded confirmation factor
+(`[0.99, 1.02]`) after the career history already fits.
+
+### Stage B: Official Offline Ranker
+
+The official ranker is:
+
+- CPU-only;
+- offline;
+- deterministic;
+- Python standard-library only;
+- no model load;
+- no network calls.
+
+It combines career-history evidence with structured JD gates:
+
+```text
+base_fit = 0.60·career_evidence
+         + 0.25·effective_best_role
+         + 0.15·relevant_experience
+
+score = base_fit × location × behavior × work_mode × experience
+               × title_coherence × consulting × tenure
+               × verified_assessment_confirmation
+
+honeypot or structural impossibility => score 0
+```
+
+The output is a 100-row CSV with grounded, deterministic 1-2 sentence reasoning
+for every selected candidate.
+
+## Quickstart: Reproduce the Submission
 
 ```bash
-# 1) Clone this repo, then place the released dataset next to it
-#    (candidates.jsonl is distributed by the organizers, not redistributed here).
+# 1) Clone this repo, then place the released dataset next to it.
+#    candidates.jsonl is distributed by the organizers and is not redistributed here.
 #    If you only have the .gz bundle:
 gunzip -k candidates.jsonl.gz
 
-# 2) Create a clean virtual environment
+# 2) Create a clean virtual environment.
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 python -m pip install --no-index -r requirements.txt
 
-# 3) Run the official ranker -- OFFLINE, CPU-only, no model load, deterministic.
-#    Uses only candidates.jsonl + the committed CSV artifacts below.
+# 3) Run the official ranker: offline, CPU-only, no model load, deterministic.
 python3 rank_ursi_fl.py \
   --candidates ./candidates.jsonl \
   --role-projection ./artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv \
   --out ./submission.csv
 
-# 4) Validate the output format
+# 4) Validate the output format.
 python3 validate_submission.py submission.csv
 ```
 
-Step 3 is the **single command** that reproduces the submission CSV from
-`candidates.jsonl`, as required by `submission_spec.md` §10.3.
+Step 3 is the single command that reproduces the submitted top-100 CSV from
+`candidates.jsonl` and the frozen local artifacts.
 
-For a one-command local reproduction that also creates/uses `.venv` and runs the
-validator:
+For one-command local reproduction:
 
 ```bash
 ./reproduce.sh ./candidates.jsonl ./submission.csv
 ```
 
-The script installs `requirements.txt` with `--no-index`; the official ranking
-path has no third-party dependencies, so setup does not need network access.
+The helper creates or reuses `.venv`, installs `requirements.txt` with
+`--no-index`, runs the ranker, and validates the generated CSV.
 
-**Measured on this repo's reference machine** (Apple M2, 8 CPU cores, 8 GB
-RAM, Python 3.11.4, macOS 14.8.7): **~35 s wall-clock, ~1.7 GB peak RSS** for
-the full 100,000-candidate pool — comfortably inside the 5 min / 16 GB / CPU-only
-/ no-network compute budget. Output is **byte-identical across repeated runs**
-(fully deterministic; ties broken by ascending `candidate_id`).
+Measured on the reference machine (Apple M2, 8 CPU cores, 8 GB RAM, Python
+3.11.4, macOS 14.8.7): **about 35 seconds wall-clock** and **about 1.7 GB peak
+RSS** for the full 100,000-candidate pool. Repeated runs are byte-identical;
+ties are broken by ascending `candidate_id`.
 
-The ranking step (`rank_ursi_fl.py`) imports **no third-party package** — only
-Python standard library (`csv`, `json`, `re`, `argparse`, `pathlib`).
-`requirements.txt` is intentionally dependency-free. `numpy` is listed only in
-`requirements-precompute.txt` for the optional precompute step below.
+## Submission CSV Contract
 
-### Running on a small sample
+The generated submission must use exactly this header:
 
-`rank_ursi_fl.py` accepts `--limit N` to read only the first N candidates and
-`--top-n N` to emit fewer than 100 rows for sandbox/demo smoke tests:
-
-```bash
-python3 rank_ursi_fl.py --candidates ./candidates.jsonl --limit 50 --top-n 50 \
-  --role-projection ./artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv \
-  --out ./sample_out.csv
+```text
+candidate_id,rank,score,reasoning
 ```
 
-This partial output is for sandbox/demonstration only. Official submissions must
-use the default `--top-n 100` and pass `validate_submission.py`.
+It must contain:
 
-### Docker reproduction
+- exactly 100 data rows;
+- unique `candidate_id` values in `CAND_XXXXXXX` format;
+- ranks `1` through `100`, each exactly once;
+- float scores in non-increasing rank order;
+- ascending `candidate_id` as the deterministic tie-breaker for equal scores;
+- grounded reasoning tied to actual candidate evidence.
 
-The repo also includes a minimal Dockerfile. Build the image, then mount the
-organizer-provided `candidates.jsonl` into the container:
+`validate_submission.py` checks this format contract. Passing the validator is
+necessary, but ranking quality still comes from the methodology and audits.
+
+## Optional: Rebuild the Precomputed Artifacts
+
+The official ranker consumes frozen CSV artifacts already committed in this
+repo. You do not need to rebuild them to reproduce `submission.csv`.
+
+They were produced once, network-allowed, by:
+
+```bash
+export AZURE_OPENAI_API_KEY="your-azure-openai-key"
+export AZURE_OPENAI_RESOURCE_URL="https://<your-resource>.openai.azure.com"
+python -m pip install -r requirements-precompute.txt
+python3 precompute_role_semantic_index_fl.py \
+  --candidates ./candidates.jsonl \
+  --variant fl_e \
+  --out-dir ./artifacts/role_semantic_index_fl/fl_e
+```
+
+This embeds the 44 role documents, 48 titles, and FL-E anchor pack with Azure
+OpenAI `text-embedding-3-large`. Embeddings are used only here, never during
+official ranking.
+
+## Docker Reproduction
+
+Build the image and mount the organizer-provided `candidates.jsonl`:
 
 ```bash
 docker build -t redrob-ursi-fl .
@@ -110,110 +301,72 @@ docker run --rm -v "$PWD/docker_out:/out" redrob-ursi-fl \
   python validate_submission.py /out/submission.csv
 ```
 
-## Optional: rebuilding the precomputed artifacts
+## Running on a Small Sample
 
-The official ranker consumes frozen CSV artifacts already committed at
-`artifacts/role_semantic_index_fl/fl_e/`. You do **not** need to rebuild them
-to reproduce the submission. They were produced once, network-allowed, by:
+For sandbox or demo smoke tests, `rank_ursi_fl.py` accepts `--limit N` and
+`--top-n N`:
 
 ```bash
-export AZURE_OPENAI_API_KEY="your-azure-openai-key"
-export AZURE_OPENAI_RESOURCE_URL="https://<your-resource>.openai.azure.com"
-python -m pip install -r requirements-precompute.txt
-python3 precompute_role_semantic_index_fl.py \
-  --candidates ./candidates.jsonl --variant fl_e \
-  --out-dir ./artifacts/role_semantic_index_fl/fl_e
+python3 rank_ursi_fl.py \
+  --candidates ./candidates.jsonl \
+  --limit 50 \
+  --top-n 50 \
+  --role-projection ./artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv \
+  --out ./sample_out.csv
 ```
 
-This step embeds the deduplicated **44 role documents + 48 titles** plus the
-FL-E JD anchor pack with Azure `text-embedding-3-large`, and (for
-false-positive diagnostics only, never scored) 76 summary templates and 133
-skill names. Embeddings are used **exclusively** in this precompute step —
-never at ranking time.
+Partial outputs are for demonstration only. Official submissions should use the
+default `--top-n 100` and pass `validate_submission.py`.
 
-## Approach (why this beats keyword/embedding matching)
+## Repository Map
 
-The dataset is synthetic and **closed**: the 300,171 career-history
-descriptions deduplicate to only **44 unique role documents** (discovered
-automatically — not assumed). Titles and skills are deliberately noisy traps.
-
-URSI-FL treats ranking as **hybrid retrieval** with a single semantic signal:
-
-1. **JD → contrastive query.** Seven JD-derived facets, each with a positive
-   concept (systems the JD wants built) and a negative concept (look-alike
-   non-fits the JD's trap section warns about). Encoded as text — never
-   matched literally.
-2. **Score each unique role document once** with Azure `text-embedding-3-large`:
-   `contrast = pos − 0.70·neg`, weighted over facets, **rank-percentile
-   normalized within the discovered corpus** — this is what makes
-   plain-language fits score high and non-technical roles collapse to ~0,
-   with no keyword list.
-3. **Project to candidates** by recency, duration, currentness, breadth, and a
-   separate semantic **title-coherence** guard.
-4. **Rank offline** = career-history role evidence (the one semantic signal) +
-   structured **business gates** mapped 1:1 to explicit JD statements
-   (India/visa, behavioral availability, seniority, title coherence,
-   consulting/tenure guards). Skills and summaries are never scored, so
-   keyword-stuffed skill sections have zero effect.
-5. **Honeypots** (structural impossibilities + tech anachronisms) are forced
-   to score 0 (95 caught in the full pool, 0 in the top 100).
-
-**No manual template grades and no career-evidence keyword lexicons in the
-official path.**
-
-See [`METHODOLOGY_URSI_FL.md`](METHODOLOGY_URSI_FL.md) for the full scoring
-formula, the gate-by-gate JD justification table, and the complete validation
-evidence (fixed-leak invariant, template audit, honeypot audit, anchor
-stability, sentinel checks).
-
-## Files
-
-- `rank_ursi_fl.py` — **the official offline ranker** (run this for the submission).
-- `ursi_fl_common.py` — shared date/honeypot/anchor logic (used by both the
-  ranker and precompute, so honeypot detection can never diverge between them).
-- `precompute_role_semantic_index_fl.py` — builds the FL-E role-semantic index
-  (optional; network-allowed; not needed to reproduce the submission).
+- `rank_ursi_fl.py` — official offline ranker.
+- `ursi_fl_common.py` — shared JD anchors, date logic, and honeypot logic.
+- `precompute_role_semantic_index_fl.py` — optional network-allowed artifact
+  builder.
 - `artifacts/role_semantic_index_fl/fl_e/` — frozen FL-E artifacts consumed by
-  the ranker: `candidate_role_projection.csv`, `unique_role_scores.csv`,
-  `manifest.json`, `jd_anchor_pack.json`, `validation_report.md`, plus
-  diagnostics-only summary/skill projections (never scored).
-- `submission.csv` — the reproduced top-100 submission. **Rename
-  to your registered participant ID before uploading to the portal**
-  (e.g. `team_xxx.csv`), per `submission_spec.md` §2.
-- `validate_submission.py` — format validator (provided by the organizers).
-- `submission_metadata.yaml` — mirrors the portal metadata (see
-  `submission_spec.md` §10.2); fill in the identity fields before submitting.
-- `METHODOLOGY_URSI_FL.md` — the definitive methodology for the submitted system.
-- `URSI_FL.md`, `URSI_V3.md` — iteration history / changelogs.
+  the ranker.
+- `submission.csv` — reproduced top-100 output. Rename only when uploading to
+  the portal if the organizer requires a participant-ID filename.
+- `validate_submission.py` — CSV format validator.
+- `submission_metadata.yaml` — portal-style metadata: team identity,
+  reproducibility, compute declaration, AI-tools declaration, and methodology
+  summary.
+- `METHODOLOGY_URSI_FL.md` — definitive methodology for the submitted system.
+- `URSI_FL.md`, `URSI_V3.md` — iteration history and adoption rationale.
 - `requirements.txt` — official ranking dependencies; intentionally empty of
-  packages because the ranker is standard-library only.
-- `requirements-precompute.txt` — optional `numpy` dependency for rebuilding
-  the frozen Azure embedding artifacts.
-- `reproduce.sh` — local helper that creates/uses `.venv`, runs the official
-  ranker, and validates the 100-row CSV.
-- `Dockerfile` / `.dockerignore` — container reproduction path for sandbox or
-  Stage 3-style checks.
+  third-party packages.
+- `requirements-precompute.txt` — optional precompute dependency file.
+- `reproduce.sh` — local reproduction helper.
+- `Dockerfile` / `.dockerignore` — container reproduction path.
+- `assets/architecture-diagrams/` — architecture diagrams used in this README
+  and methodology explanation.
 
-## Honeypots and traps
+## Validation Evidence
 
-The dataset plants ~80 honeypot candidates with structurally impossible
-profiles (e.g. a role longer than the entire stated career, expert skills with
-zero months of use, technology referenced before its public release date).
-`ursi_fl_common.honeypot_reasons()` catches these via pure consistency checks
-— no semantics, no keyword lists. On the full 100K pool: **95 caught, 0 in the
-top 100**.
+The final FL-E path was adopted only after the following checks:
 
-## AI tools declaration
+- format validator passes;
+- repeated ranking run is byte-identical;
+- 0 honeypots in the top 100;
+- top-100 readable review completed;
+- false-positive sentinels checked: nontechnical titles, operations/content,
+  RAG support chatbot, generic MLOps/churn, QA/test automation, consulting-only,
+  serial-hopper, and CV/speech/robotics-without-IR patterns;
+- anchor leave-one-out and template audits documented in
+  `METHODOLOGY_URSI_FL.md` and `URSI_FL.md`.
 
-See `submission_metadata.yaml` for the full, honest declaration. Summary: AI
-tools (Claude, Cursor) assisted with research, design discussion, and code
-review; Azure OpenAI `text-embedding-3-large` is used in the precompute step
-only. The official ranker makes no API calls and loads no model.
+## AI Tools Declaration
 
-## Sandbox / demo
+See `submission_metadata.yaml` for the full declaration. Summary: AI tools
+assisted with research, design discussion, code review, and packaging. Azure
+OpenAI `text-embedding-3-large` is used only in the precompute step to generate
+frozen local artifacts. The official ranker makes no API calls and loads no
+model.
 
-A hosted sandbox (small-sample reproduction, per `submission_spec.md` §10.5)
-is linked from `submission_metadata.yaml` → `sandbox_link`. If a hosted sandbox
-is unavailable, the Docker commands above are a self-contained reproduction
-recipe: they build the ranker image and run it with the released candidates file
-mounted read-only.
+## Sandbox / Demo
+
+A hosted sandbox link is listed in `submission_metadata.yaml` under
+`sandbox_link`. If the hosted sandbox is unavailable, the Docker commands above
+are the self-contained reproduction path: build the ranker image and run it
+with the released candidates file mounted read-only.

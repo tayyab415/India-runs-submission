@@ -24,4 +24,6 @@ __pycache__/
 /tmp_*.jsonl
 /docker_out/
 1Horizon.*
-assets/
+assets/*
+!assets/architecture-diagrams/
+!assets/architecture-diagrams/*

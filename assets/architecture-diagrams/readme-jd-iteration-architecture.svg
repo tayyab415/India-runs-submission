@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="920" viewBox="0 0 1536 920" role="img" aria-labelledby="title desc">
+  <title id="title">JD interpretation and iteration architecture</title>
+  <desc id="desc">A formal architecture diagram showing how the job description was interpreted, early mistakes were corrected, and URSI-FL FL-E was selected.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#5f6b7a"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfdff; }
+      .title { font: 700 52px Inter, Arial, sans-serif; fill: #0b1220; }
+      .subtitle { font: 400 20px Inter, Arial, sans-serif; fill: #334155; }
+      .panel { fill: #ffffff; stroke-width: 1.4; rx: 10; filter: url(#shadow); }
+      .blue { stroke: #2563eb; }
+      .teal { stroke: #0891b2; }
+      .purple { stroke: #7c3aed; }
+      .stage-blue { font: 700 27px Inter, Arial, sans-serif; fill: #2563eb; }
+      .stage-teal { font: 700 27px Inter, Arial, sans-serif; fill: #0f949b; }
+      .box { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.2; rx: 8; }
+      .box-blue { fill: #1f6feb; stroke: #1f6feb; rx: 8; }
+      .box-teal { fill: #0f9fa6; stroke: #0f9fa6; rx: 8; }
+      .box-orange { fill: #f97316; stroke: #f97316; rx: 8; }
+      .box-red { fill: #fff7f7; stroke: #ef4444; stroke-width: 1.4; rx: 8; }
+      .box-dash { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.3; stroke-dasharray: 6 6; rx: 8; }
+      .label { font: 600 18px Inter, Arial, sans-serif; fill: #0f172a; }
+      .small { font: 400 15px Inter, Arial, sans-serif; fill: #334155; }
+      .label-white { font: 600 18px Inter, Arial, sans-serif; fill: #ffffff; }
+      .small-white { font: 400 15px Inter, Arial, sans-serif; fill: #eaf7ff; }
+      .line { stroke: #5f6b7a; stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+      .line-soft { stroke: #94a3b8; stroke-width: 1.1; fill: none; marker-end: url(#arrow); }
+      .foot { font: 400 18px Inter, Arial, sans-serif; fill: #334155; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1536" height="920"/>
+  <text class="title" x="768" y="68" text-anchor="middle">JD Interpretation and Iteration Architecture</text>
+  <text class="subtitle" x="768" y="102" text-anchor="middle">The final ranker came from tightening the hiring interpretation, not just tuning scores.</text>
+
+  <rect class="panel blue" x="28" y="142" width="456" height="604"/>
+  <text class="stage-blue" x="256" y="184" text-anchor="middle">1. Read the JD as a hiring spec</text>
+
+  <rect class="box-blue" x="72" y="228" width="354" height="72"/>
+  <text class="label-white" x="249" y="256" text-anchor="middle">Bullseye signal</text>
+  <text class="small-white" x="249" y="281" text-anchor="middle">production search, ranking, retrieval, matching</text>
+
+  <rect class="box-teal" x="72" y="330" width="354" height="72"/>
+  <text class="label-white" x="249" y="358" text-anchor="middle">Evidence source trust</text>
+  <text class="small-white" x="249" y="383" text-anchor="middle">career history first; title/logistics as gates</text>
+
+  <rect class="box" x="72" y="432" width="354" height="72"/>
+  <text class="label" x="249" y="460" text-anchor="middle">Look-alike non-fits</text>
+  <text class="small" x="249" y="485" text-anchor="middle">RAG wrappers, generic MLOps, CV/speech, QA</text>
+
+  <rect class="box" x="72" y="534" width="354" height="72"/>
+  <text class="label" x="249" y="562" text-anchor="middle">Business constraints</text>
+  <text class="small" x="249" y="587" text-anchor="middle">India/no visa, availability, tenure, consulting</text>
+
+  <rect class="box-dash" x="72" y="642" width="354" height="58"/>
+  <text class="small" x="249" y="666" text-anchor="middle">Keyword-heavy skills and summaries are traps,</text>
+  <text class="small" x="249" y="689" text-anchor="middle">not rescue signals.</text>
+
+  <path class="line" d="M484 444 H526"/>
+
+  <rect class="panel teal" x="536" y="142" width="464" height="604"/>
+  <text class="stage-teal" x="768" y="184" text-anchor="middle">2. Mistakes we corrected</text>
+
+  <rect class="box-red" x="586" y="220" width="362" height="68"/>
+  <text class="label" x="767" y="247" text-anchor="middle">Early baseline: not enough JD meaning</text>
+  <text class="small" x="767" y="270" text-anchor="middle">scores could reward adjacent AI-looking profiles</text>
+
+  <path class="line-soft" d="M767 288 V322"/>
+
+  <rect class="box-red" x="586" y="322" width="362" height="68"/>
+  <text class="label" x="767" y="349" text-anchor="middle">V1: title was too continuous</text>
+  <text class="small" x="767" y="372" text-anchor="middle">same career template, noisy title differences</text>
+
+  <path class="line-soft" d="M767 390 V424"/>
+
+  <rect class="box-red" x="586" y="424" width="362" height="68"/>
+  <text class="label" x="767" y="451" text-anchor="middle">V2/V3: restore explicit JD gates</text>
+  <text class="small" x="767" y="474" text-anchor="middle">consulting-only and serial job-hopping were missing</text>
+
+  <path class="line-soft" d="M767 492 V526"/>
+
+  <rect class="box-red" x="586" y="526" width="362" height="68"/>
+  <text class="label" x="767" y="553" text-anchor="middle">V3.1/V3.2: fix double-counting</text>
+  <text class="small" x="767" y="576" text-anchor="middle">raw best-role quality needed coverage control</text>
+
+  <path class="line-soft" d="M767 594 V628"/>
+
+  <rect class="box-orange" x="586" y="628" width="362" height="72"/>
+  <text class="label-white" x="767" y="656" text-anchor="middle">FL variants: anchor stress tests</text>
+  <text class="small-white" x="767" y="681" text-anchor="middle">reject variants that fail sentinels or invariants</text>
+
+  <path class="line" d="M1000 444 H1042"/>
+
+  <rect class="panel teal" x="1052" y="142" width="456" height="604"/>
+  <text class="stage-teal" x="1280" y="184" text-anchor="middle">3. Final URSI-FL FL-E shape</text>
+
+  <rect class="box-blue" x="1100" y="226" width="356" height="72"/>
+  <text class="label-white" x="1278" y="254" text-anchor="middle">Expressive contrastive anchors</text>
+  <text class="small-white" x="1278" y="279" text-anchor="middle">positive JD facets vs look-alike negatives</text>
+
+  <rect class="box-teal" x="1100" y="328" width="356" height="72"/>
+  <text class="label-white" x="1278" y="356" text-anchor="middle">One semantic signal</text>
+  <text class="small-white" x="1278" y="381" text-anchor="middle">career-history role evidence only</text>
+
+  <rect class="box" x="1100" y="430" width="356" height="72"/>
+  <text class="label" x="1278" y="458" text-anchor="middle">Structured JD gates</text>
+  <text class="small" x="1278" y="483" text-anchor="middle">location, availability, title, consulting, tenure</text>
+
+  <rect class="box" x="1100" y="532" width="356" height="72"/>
+  <text class="label" x="1278" y="560" text-anchor="middle">Diagnostics without leakage</text>
+  <text class="small" x="1278" y="585" text-anchor="middle">skills/summaries reviewed, not used as boosters</text>
+
+  <rect class="box-orange" x="1100" y="634" width="356" height="66"/>
+  <text class="label-white" x="1278" y="662" text-anchor="middle">Promoted variant: FL-E</text>
+  <text class="small-white" x="1278" y="685" text-anchor="middle">deterministic, offline, validated top 100</text>
+
+  <rect class="panel purple" x="28" y="770" width="1480" height="86"/>
+  <text class="stage-blue" x="78" y="822">Adoption bar</text>
+  <rect class="box" x="292" y="788" width="210" height="46"/>
+  <text class="small" x="397" y="816" text-anchor="middle">validator pass</text>
+  <rect class="box" x="532" y="788" width="210" height="46"/>
+  <text class="small" x="637" y="816" text-anchor="middle">determinism repeat</text>
+  <rect class="box" x="772" y="788" width="210" height="46"/>
+  <text class="small" x="877" y="816" text-anchor="middle">0 honeypots top 100</text>
+  <rect class="box" x="1012" y="788" width="210" height="46"/>
+  <text class="small" x="1117" y="816" text-anchor="middle">sentinel sweep</text>
+  <rect class="box" x="1252" y="788" width="210" height="46"/>
+  <text class="small" x="1357" y="816" text-anchor="middle">readable review</text>
+
+  <text class="foot" x="768" y="890" text-anchor="middle">The final system is the result of narrowing the JD into auditable evidence, then rejecting iterations that looked smart but failed traps.</text>
+</svg>
