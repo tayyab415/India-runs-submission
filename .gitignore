@@ -21,3 +21,5 @@ __pycache__/
 
 # Scratch reproduction output (regenerate with the documented command)
 /tmp_*.csv
+/tmp_*.jsonl
+/docker_out/

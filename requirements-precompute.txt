@@ -1,0 +1,5 @@
+# Optional precompute dependencies.
+#
+# These are NOT needed to reproduce submission.csv from the committed artifacts.
+# Install them only if you intend to rebuild artifacts/role_semantic_index_fl/.
+numpy>=1.24,<3
