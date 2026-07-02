@@ -31,9 +31,9 @@ sandbox_link: "https://huggingface.co/spaces/TODO_USERNAME/redrob-ranker"  # TOD
 # behavioral/logistics/honeypot gates -- self-listed skills and summaries are
 # never scored (diagnostics only); Redrob-verified skill assessments contribute
 # a bounded [0.99, 1.02] confirmation factor. See URSI_FL.md.
-# Verified 2026-07-02: this command reproduces submission_ursi_fl_fl_e.csv
+# Verified 2026-07-02: this command reproduces submission.csv
 # byte-identically.
-reproduce_command: "python3 rank_ursi_fl.py --candidates ./candidates.jsonl --role-projection ./artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv --out ./submission_ursi_fl_fl_e.csv"
+reproduce_command: "python3 rank_ursi_fl.py --candidates ./candidates.jsonl --role-projection ./artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv --out ./submission.csv"
 
 # One-time precompute (network allowed; produces the committed CSV artifacts):
 precompute_command: "python3 precompute_role_semantic_index_fl.py --candidates ./candidates.jsonl --variant fl_e --out-dir ./artifacts/role_semantic_index_fl/fl_e"

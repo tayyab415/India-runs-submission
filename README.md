@@ -35,10 +35,10 @@ pip install -r requirements.txt
 python3 rank_ursi_fl.py \
   --candidates ./candidates.jsonl \
   --role-projection ./artifacts/role_semantic_index_fl/fl_e/candidate_role_projection.csv \
-  --out ./submission_ursi_fl_fl_e.csv
+  --out ./submission.csv
 
 # 4) Validate the output format
-python3 validate_submission.py submission_ursi_fl_fl_e.csv
+python3 validate_submission.py submission.csv
 ```
 
 Step 3 is the **single command** that reproduces the submission CSV from
@@ -135,7 +135,7 @@ stability, sentinel checks).
   the ranker: `candidate_role_projection.csv`, `unique_role_scores.csv`,
   `manifest.json`, `jd_anchor_pack.json`, `validation_report.md`, plus
   diagnostics-only summary/skill projections (never scored).
-- `submission_ursi_fl_fl_e.csv` — the reproduced top-100 submission. **Rename
+- `submission.csv` — the reproduced top-100 submission. **Rename
   to your registered participant ID before uploading to the portal**
   (e.g. `team_xxx.csv`), per `submission_spec.md` §2.
 - `validate_submission.py` — format validator (provided by the organizers).
