@@ -1,4 +1,8 @@
-# Dataset Overview
+# URSI-FL — Redrob Intelligent Candidate Ranking
+
+**Team 1Horizon** — [Tayyab Khan](https://github.com/tayyab415) · [Sahil Tanna](https://github.com/coldboxer007)
+
+---
 
 This repository is our final submission system for the **Redrob Intelligent
 Candidate Discovery & Ranking Challenge**. The task sounds simple on paper:
