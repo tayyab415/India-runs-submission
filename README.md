@@ -1,3 +1,15 @@
+---
+title: URSI-FL Candidate Ranker
+emoji: "\U0001F3AF"
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: "5.34.2"
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # URSI-FL — Redrob Intelligent Candidate Ranking
 
 **Team 1Horizon** — [Tayyab Khan](https://github.com/tayyab415) · [Sahil Tanna](https://github.com/coldboxer007)
