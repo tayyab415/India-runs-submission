@@ -597,19 +597,23 @@ def build_reasoning(row: dict[str, Any], rank: int, previews: dict[str, str],
             "role history is peripheral to the JD\u2019s technical requirements",
         )[variant]
 
+    # Spec \u00a72: reasoning must be a 1-2 sentence justification. Sentence 1 packs
+    # facts + fit tier + grounded quote with semicolons (the spec's own example
+    # style); sentence 2 is the honest concern / behavioral strengths.
     evidence = previews.get(doc_id, "")
-    ev_label = ("Best evidence", "Strongest career signal", "Key role evidence")[variant]
-    ev_txt = f' {ev_label}: \u201c{_snippet(evidence)}\u201d.' if evidence else ""
+    ev_label = ("best evidence", "strongest career signal", "key role evidence")[variant]
+    ev_txt = f' \u2014 {ev_label}: \u201c{_snippet(evidence)}\u201d' if evidence else ""
 
     if variant == 0:
-        lead = (f"{years:.1f}y; {title} at {company} ({loc}). {fit} "
-                f"(role-evidence {ces:.2f}, {rel_y:.1f}y relevant).{ev_txt}")
+        lead = (f"{years:.1f}y {title} at {company} ({loc}); {fit} "
+                f"(role-evidence {ces:.2f}, {rel_y:.1f}y relevant){ev_txt}.")
     elif variant == 1:
-        lead = (f"{title} at {company} ({loc}, {years:.1f}y total). {fit} "
-                f"(role-evidence {ces:.2f}).{ev_txt}")
+        lead = (f"{title} at {company} ({loc}, {years:.1f}y total); {fit} "
+                f"(role-evidence {ces:.2f}){ev_txt}.")
     else:
         lead = (f"{fit} (role-evidence {ces:.2f}); "
-                f"{years:.1f}y as {title} at {company}, {loc}.{ev_txt}")
+                f"{years:.1f}y as {title} at {company}, {loc}{ev_txt}.")
+    lead = lead[0].upper() + lead[1:]
 
     concern = None
     rr = float(s.get("recruiter_response_rate") or 0)
@@ -688,7 +692,11 @@ def main() -> None:
                     help="Optional unique_role_scores.csv for raw best-role evidence and snippets")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--top-n", type=int, default=TOP_N,
+                    help="Rows to emit. Keep the default 100 for the official submission; use <=100 for sandbox smoke tests.")
     args = ap.parse_args()
+    if args.top_n <= 0:
+        raise SystemExit("--top-n must be positive")
 
     proj = load_role_projection(args.role_projection)
     role_scores_path = args.role_scores or (args.role_projection.parent / "unique_role_scores.csv")
@@ -703,16 +711,16 @@ def main() -> None:
         if r.get("honeypot"):
             honeypots += 1
         scored.append((round(r["score"], 9), r["candidate_id"], r))
-    if len(scored) < TOP_N:
-        raise SystemExit(f"Need >= {TOP_N} candidates; got {len(scored)}")
+    if len(scored) < args.top_n:
+        raise SystemExit(f"Need >= {args.top_n} candidates; got {len(scored)}")
 
     scored.sort(key=lambda x: (-x[0], x[1]))
-    top = [r for _, _, r in scored[:TOP_N]]
+    top = [r for _, _, r in scored[:args.top_n]]
     write_submission(top, args.out, previews, role_meta)
 
     print(f"Ranked {len(scored)} candidates; honeypots excluded: {honeypots}")
-    print(f"Wrote top {TOP_N} -> {args.out}")
-    print("Top 10:")
+    print(f"Wrote top {args.top_n} -> {args.out}")
+    print(f"Top {min(10, len(top))}:")
     for i, row in enumerate(top[:10], 1):
         p = row["candidate"].get("profile", {})
         print(f"  {i:02d} {row['candidate_id']} score={row['score']:.4f} "

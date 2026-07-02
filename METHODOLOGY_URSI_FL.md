@@ -150,7 +150,11 @@ profiles is deliberately **not** used.
 ## 7. Reasoning column (Stage 4 alignment)
 
 Reasoning is generated deterministically *after* scoring and cannot affect
-ranks. Each row is assembled from the candidate's actual data:
+ranks. Each row is exactly the spec's required **1–2 sentences** (spec §2:
+"a 1-2 sentence justification"): sentence 1 packs the facts, fit tier, and
+grounded quote with semicolons — the spec's own example style — and sentence 2
+is the honest concern or behavioral strengths. Each row is assembled from the
+candidate's actual data:
 
 - **facts**: years, current title, company, location, role-evidence score,
   relevant years — all read from the profile/artifacts;
@@ -163,7 +167,7 @@ ranks. Each row is assembled from the candidate's actual data:
   candidate (location/relocation, notice period, open-to-work, response rate,
   offer acceptance, GitHub absence, …), or **behavioral strengths** (response
   rate, notice period, active applications, GitHub) when no concern fired;
-- **variation**: three sentence structures rotated by `candidate_id % 3`
+- **variation**: three clause structures rotated by `candidate_id % 3`
   (deterministic, no RNG), three evidence labels, five anchor phrasings, and
   rank-consistent fit language ("strongly aligns" → "solid alignment" →
   "adjacent") tiered on the same CES that drives the score.
